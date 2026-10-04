@@ -1,6 +1,17 @@
 // Device abstractions & Connector interfaces
 
-export type VendorType = 'MikroTik' | 'GenericSSH' | 'Cisco' | 'Huawei' | 'Juniper' | 'Linux';
+export type VendorType =
+  | 'MikroTik'
+  | 'Cisco'
+  | 'Huawei'
+  | 'Juniper'
+  | 'Arista'
+  | 'Fortinet'
+  | 'VyOS'
+  | 'EdgeCore'
+  | 'Ubiquiti'
+  | 'GenericSSH'
+  | 'Linux';
 export type DeviceType = 'ROUTER' | 'SWITCH' | 'ACCESS_POINT' | 'FIREWALL' | 'SERVER';
 export type ConnectionType = 'ROUTEROS_API' | 'ROUTEROS_REST' | 'SSH';
 export type DeviceStatus = 'ONLINE' | 'WARNING' | 'OFFLINE' | 'UNREACHABLE';

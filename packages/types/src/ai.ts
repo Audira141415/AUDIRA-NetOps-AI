@@ -3,7 +3,16 @@
 import { PermissionCode } from './rbac.js';
 import { RiskLevel } from './config.js';
 
-export type AIProviderType = 'ollama' | 'openai' | 'anthropic' | 'gemini' | 'custom';
+export type AIProviderType =
+  | 'ollama'
+  | 'grok'
+  | 'deepseek'
+  | 'openai'
+  | 'anthropic'
+  | 'gemini'
+  | 'mistral'
+  | 'openrouter'
+  | 'custom';
 export type AIExecutionMode = 'READ_ONLY' | 'PLAN' | 'EXECUTE';
 
 export interface JSONSchemaProperty {

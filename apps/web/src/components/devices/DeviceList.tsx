@@ -144,9 +144,17 @@ export const DeviceList: React.FC = () => {
             className="bg-[#111c38] border border-cyan-500/25 text-slate-300 text-xs font-mono rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-cyan-400"
           >
             <option value="ALL">All Vendors</option>
-            <option value="MikroTik">MikroTik</option>
-            <option value="Cisco">Cisco</option>
-            <option value="Linux">Linux</option>
+            <option value="MikroTik">MikroTik RouterOS</option>
+            <option value="Cisco">Cisco Systems</option>
+            <option value="Huawei">Huawei Enterprise</option>
+            <option value="Juniper">Juniper Networks</option>
+            <option value="Arista">Arista Networks</option>
+            <option value="Fortinet">Fortinet FortiGate</option>
+            <option value="VyOS">VyOS Routing</option>
+            <option value="EdgeCore">EdgeCore SONiC</option>
+            <option value="Ubiquiti">Ubiquiti EdgeMAX/UniFi</option>
+            <option value="Linux">Linux Server</option>
+            <option value="GenericSSH">Generic SSH</option>
           </select>
         </div>
 
@@ -319,7 +327,14 @@ export const DeviceList: React.FC = () => {
                     className="w-full px-3 py-2 rounded-xl bg-[#111c38] border border-cyan-500/30 text-white focus:outline-none focus:border-cyan-400 text-xs font-mono"
                   >
                     <option value="MikroTik">MikroTik RouterOS</option>
-                    <option value="Cisco">Cisco IOS</option>
+                    <option value="Cisco">Cisco Systems (IOS-XE/NX-OS)</option>
+                    <option value="Huawei">Huawei Enterprise (VRP OS)</option>
+                    <option value="Juniper">Juniper Networks (JunOS)</option>
+                    <option value="Arista">Arista Networks (EOS)</option>
+                    <option value="Fortinet">Fortinet FortiGate (FortiOS)</option>
+                    <option value="VyOS">VyOS Routing Platform</option>
+                    <option value="EdgeCore">EdgeCore Networks (SONiC)</option>
+                    <option value="Ubiquiti">Ubiquiti (EdgeMAX/UniFi)</option>
                     <option value="Linux">Linux / Ubuntu Server</option>
                     <option value="GenericSSH">Generic SSH Switch/Router</option>
                   </select>
