@@ -17,6 +17,7 @@ import { alertRouter } from './modules/alerts/alert.controller.js';
 import { aiRouter } from './modules/ai/ai.controller.js';
 import { automationRouter } from './modules/automation/automation.controller.js';
 import { auditRouter } from './modules/audit/audit.controller.js';
+import { notificationRouter } from './modules/notifications/notification.controller.js';
 import { setupTerminalGateway } from './modules/terminal/terminal.gateway.js';
 
 const logger = new NetOpsLogger('API_GATEWAY');
@@ -65,6 +66,7 @@ app.use(`${API_PREFIX}/ai`, aiRouter);
 app.use(`${API_PREFIX}/automation`, automationRouter);
 app.use(`${API_PREFIX}/audit`, auditRouter);
 app.use(`${API_PREFIX}/audit-logs`, auditRouter); // Alias
+app.use(`${API_PREFIX}/notifications`, notificationRouter);
 
 // Centralized Error Handler
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
