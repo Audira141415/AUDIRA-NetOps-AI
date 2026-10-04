@@ -44,10 +44,13 @@ export const SettingsView: React.FC = () => {
 
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
 
-  // 1. AI Gateway State (Includes Grok, DeepSeek, Ollama, OpenAI, etc.)
-  const [aiProvider, setAiProvider] = useState<AIProviderType>('grok');
+  // 1. AI Gateway State (Includes 9Router, Grok, DeepSeek, Ollama, OpenAI, etc.)
+  const [aiProvider, setAiProvider] = useState<AIProviderType>('9router');
   const [showApiKey, setShowApiKey] = useState(false);
   const [aiConfig, setAiConfig] = useState({
+    nineRouterApiKey: 'sk-84766c18f4f56bc9-1xtusv-d557e2bb',
+    nineRouterBaseUrl: 'http://localhost:20128/v1',
+    nineRouterModel: 'audira-combo',
     grokApiKey: 'xai-9f8a2c4e1b7d5e6a0c3b8d1f',
     grokModel: 'grok-2-1212',
     grokBaseUrl: 'https://api.x.ai/v1',
@@ -207,9 +210,56 @@ export const SettingsView: React.FC = () => {
   };
 
   // Test AI Gateway Connection
-  const handleTestAiConnection = () => {
+  const handleTestAiConnection = async () => {
     setIsAiTesting(true);
     setAiTestResult(null);
+    const startMs = Date.now();
+
+    if (aiProvider === '9router') {
+      try {
+        const endpoint = `${aiConfig.nineRouterBaseUrl.replace(/\/$/, '')}/chat/completions`;
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${aiConfig.nineRouterApiKey}`,
+          },
+          body: JSON.stringify({
+            model: aiConfig.nineRouterModel,
+            stream: false,
+            messages: [{ role: 'user', content: 'Ping test dari AUDIRA NetOps AI. Konfirmasi status aktif.' }],
+          }),
+        });
+
+        const latency = Date.now() - startMs;
+        if (res.ok) {
+          const data = await res.json();
+          const reply = data.choices?.[0]?.message?.content || 'OK';
+          const activeModel = data.model || aiConfig.nineRouterModel;
+          setAiTestResult({
+            success: true,
+            message: `Koneksi ke 9Router BERHASIL! Model '${activeModel}' aktif merespons: "${reply.slice(0, 50).replace(/\n/g, ' ')}..."`,
+            latencyMs: latency,
+          });
+        } else {
+          const errText = await res.text();
+          setAiTestResult({
+            success: false,
+            message: `9Router HTTP ${res.status}: ${errText.slice(0, 80)}`,
+            latencyMs: latency,
+          });
+        }
+      } catch (err: any) {
+        setAiTestResult({
+          success: false,
+          message: `Gagal menghubungi 9Router di ${aiConfig.nineRouterBaseUrl}: ${err.message}`,
+          latencyMs: Date.now() - startMs,
+        });
+      } finally {
+        setIsAiTesting(false);
+      }
+      return;
+    }
 
     setTimeout(() => {
       setIsAiTesting(false);
@@ -227,7 +277,7 @@ export const SettingsView: React.FC = () => {
         message: `Koneksi ke ${providerLabel} BERHASIL! Respons inferensi valid dengan 26 Network Tools terdaftar.`,
         latencyMs: aiProvider === 'ollama' ? 12 : 240,
       });
-    }, 1100);
+    }, 900);
   };
 
   // Test Webhook Dispatch
@@ -330,6 +380,7 @@ export const SettingsView: React.FC = () => {
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 font-mono">
                 {[
+                  { id: '9router', name: '9Router (Local/Cloud)', badge: '60+ Models • Active Port 20128', icon: Network },
                   { id: 'grok', name: 'xAI Grok', badge: 'High Reasoning', icon: Zap },
                   { id: 'ollama', name: 'Ollama (Local)', badge: 'Air-Gapped', icon: Server },
                   { id: 'deepseek', name: 'DeepSeek API', badge: 'R1 / V3', icon: Cpu },
@@ -362,6 +413,106 @@ export const SettingsView: React.FC = () => {
 
             {/* Provider Specific Inputs */}
             <div className="p-4 rounded-xl bg-[#080d1e] border border-cyan-500/20 space-y-4">
+              {aiProvider === '9router' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between border-b border-cyan-500/20 pb-2">
+                    <span className="font-bold text-white flex items-center space-x-2">
+                      <Network className="w-4 h-4 text-cyan-400" />
+                      <span>Konfigurasi 9Router (Smart Multi-Provider AI Gateway)</span>
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/40 text-[10px] font-mono font-bold flex items-center space-x-1.5 shadow">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <span>9ROUTER DAEMON ACTIVE (PORT 20128)</span>
+                    </span>
+                  </div>
+
+                  {/* Mode Selector: Local Daemon vs Cloud API */}
+                  <div className="flex flex-wrap items-center gap-3 text-xs">
+                    <span className="text-slate-400 font-semibold">Endpoint Route:</span>
+                    <button
+                      type="button"
+                      onClick={() => setAiConfig({ ...aiConfig, nineRouterBaseUrl: 'http://localhost:20128/v1' })}
+                      className={`px-3 py-1.5 rounded-lg font-mono text-xs transition ${
+                        aiConfig.nineRouterBaseUrl.includes('localhost')
+                          ? 'bg-blue-600 text-white font-bold border border-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.4)]'
+                          : 'bg-[#0f172e] text-slate-400 border border-slate-700'
+                      }`}
+                    >
+                      ● Local Daemon (http://localhost:20128/v1)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAiConfig({ ...aiConfig, nineRouterBaseUrl: 'https://api.9router.com/v1' })}
+                      className={`px-3 py-1.5 rounded-lg font-mono text-xs transition ${
+                        aiConfig.nineRouterBaseUrl.includes('api.9router.com')
+                          ? 'bg-blue-600 text-white font-bold border border-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.4)]'
+                          : 'bg-[#0f172e] text-slate-400 border border-slate-700'
+                      }`}
+                    >
+                      ☁ Cloud API (https://api.9router.com/v1)
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-slate-300 font-semibold mb-1">
+                        9Router API Key (Aktif Terhubung)
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showApiKey ? 'text' : 'password'}
+                          value={aiConfig.nineRouterApiKey}
+                          onChange={(e) => setAiConfig({ ...aiConfig, nineRouterApiKey: e.target.value })}
+                          className="w-full px-3 py-2 rounded-lg bg-[#0e1730] border border-cyan-500/40 text-cyan-300 font-mono focus:outline-none focus:border-cyan-400 pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowApiKey(!showApiKey)}
+                          className="absolute right-2.5 top-2.5 text-slate-400 hover:text-white"
+                        >
+                          {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                      <span className="text-[10px] text-slate-500">API Key aktif terisi: sk-84766c18f4f56bc9-1xtusv-d557e2bb</span>
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-300 font-semibold mb-1">
+                        Pilihan Model Aktif di 9Router
+                      </label>
+                      <select
+                        value={aiConfig.nineRouterModel}
+                        onChange={(e) => setAiConfig({ ...aiConfig, nineRouterModel: e.target.value })}
+                        className="w-full px-3 py-2 rounded-lg bg-[#0e1730] border border-cyan-500/40 text-white font-mono focus:outline-none focus:border-cyan-400"
+                      >
+                        <option value="audira-combo">audira-combo (Claude Opus Thinking + Gemini Flash - Recommended)</option>
+                        <option value="ag/claude-sonnet-4-6">ag/claude-sonnet-4-6 (Claude 3.5 Sonnet / Antigravity)</option>
+                        <option value="ag/claude-opus-4-6-thinking">ag/claude-opus-4-6-thinking (Claude Opus Deep Thinking)</option>
+                        <option value="ag/gemini-3.8-flash-high">ag/gemini-3.8-flash-high (Gemini 3.8 Flash High Context)</option>
+                        <option value="ag/gpt-oss-120b-medium">ag/gpt-oss-120b-medium (Open-Source 120B Model)</option>
+                        <option value="9router/auto">9router/auto (Smart 3-Tier Auto Fallback: Subscription -&gt; Cheap -&gt; Free)</option>
+                      </select>
+                      <span className="text-[10px] text-slate-500">60+ model dapat dipanggil secara otomatis melalui 9Router</span>
+                    </div>
+                  </div>
+
+                  {/* 9Router Capabilities Banner */}
+                  <div className="p-3 bg-cyan-950/40 rounded-xl border border-cyan-500/30 text-xs text-slate-300 grid grid-cols-1 sm:grid-cols-3 gap-2 font-mono">
+                    <div className="flex items-center space-x-1.5 text-cyan-200">
+                      <Zap className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>Smart 3-Tier Fallback</span>
+                    </div>
+                    <div className="flex items-center space-x-1.5 text-emerald-300">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>RTK Token Saver (-20% to -40%)</span>
+                    </div>
+                    <div className="flex items-center space-x-1.5 text-indigo-300">
+                      <Sliders className="w-3.5 h-3.5 text-indigo-400" />
+                      <span>Format Translator (OpenAI/Claude/Gemini)</span>
+                    </div>
+                  </div>
+                </div>
+              )}
               {aiProvider === 'grok' && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">

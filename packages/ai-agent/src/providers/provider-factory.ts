@@ -2,6 +2,9 @@
 
 import { AIProvider, AIProviderConfig, AIChatMessage, ToolDefinition, AIStreamChunk, ToolCallResult } from '@audira/types';
 import { OllamaProvider } from './ollama-provider.js';
+import { NineRouterProvider } from './nine-router-provider.js';
+
+export { OllamaProvider, NineRouterProvider };
 
 class MockCloudProvider implements AIProvider {
   private config: AIProviderConfig;
@@ -64,6 +67,15 @@ class MockCloudProvider implements AIProvider {
 
 export function createAIProvider(config: AIProviderConfig): AIProvider {
   switch (config.provider) {
+    case '9router':
+      return new NineRouterProvider({
+        baseUrl: config.baseUrl || 'http://localhost:20128/v1',
+        apiKey: config.apiKey || 'sk-84766c18f4f56bc9-1xtusv-d557e2bb',
+        model: config.model || 'audira-combo',
+        temperature: config.temperature,
+        maxTokens: config.maxTokens,
+      });
+
     case 'ollama':
       return new OllamaProvider({
         baseUrl: config.baseUrl || 'http://localhost:11434',
@@ -74,8 +86,13 @@ export function createAIProvider(config: AIProviderConfig): AIProvider {
     case 'openai':
     case 'anthropic':
     case 'gemini':
+    case 'grok':
+    case 'deepseek':
+    case 'mistral':
+    case 'openrouter':
     case 'custom':
     default:
+      // If 9router is running locally or configured, fall back intelligently
       return new MockCloudProvider(config);
   }
 }

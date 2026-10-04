@@ -4,6 +4,7 @@ import { PermissionCode } from './rbac.js';
 import { RiskLevel } from './config.js';
 
 export type AIProviderType =
+  | '9router'
   | 'ollama'
   | 'grok'
   | 'deepseek'

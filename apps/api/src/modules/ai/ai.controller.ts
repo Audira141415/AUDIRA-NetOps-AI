@@ -12,9 +12,10 @@ import { authenticateJwt, requirePermission, AuthenticatedRequest } from '../../
 export const aiRouter = Router();
 
 let currentProviderConfig: AIProviderConfig = {
-  provider: (process.env.AI_PROVIDER as any) || 'ollama',
-  baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
-  model: process.env.OLLAMA_MODEL || 'qwen2.5:7b',
+  provider: (process.env.AI_PROVIDER as any) || '9router',
+  baseUrl: process.env.NINE_ROUTER_BASE_URL || 'http://localhost:20128/v1',
+  apiKey: process.env.NINE_ROUTER_API_KEY || 'sk-84766c18f4f56bc9-1xtusv-d557e2bb',
+  model: process.env.NINE_ROUTER_MODEL || 'audira-combo',
   temperature: 0.2,
 };
 
@@ -28,9 +29,11 @@ aiRouter.get('/providers', authenticateJwt, requirePermission('ai.read'), (_req:
     success: true,
     data: {
       activeConfig: currentProviderConfig,
-      availableProviders: ['ollama', 'openai', 'anthropic', 'gemini', 'custom'],
+      availableProviders: ['9router', 'ollama', 'grok', 'deepseek', 'openai', 'anthropic', 'gemini', 'custom'],
       defaultModels: {
+        '9router': 'audira-combo',
         ollama: 'qwen2.5:7b',
+        grok: 'grok-2-1212',
         openai: 'gpt-4o',
         anthropic: 'claude-3-5-sonnet',
         gemini: 'gemini-2.0-flash',
