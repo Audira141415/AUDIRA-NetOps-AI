@@ -50,6 +50,10 @@ interface NetOpsState {
   currentTab: NavigationTab;
   setCurrentTab: (tab: NavigationTab) => void;
 
+  devices: Device[];
+  addDevice: (device: Device) => void;
+  removeDevice: (id: string) => void;
+
   selectedDevice: Device | null;
   setSelectedDevice: (device: Device | null) => void;
   activeDeviceTab: DeviceTab;
@@ -60,6 +64,9 @@ interface NetOpsState {
 
   isAiDrawerOpen: boolean;
   setAiDrawerOpen: (open: boolean) => void;
+
+  isAddDeviceModalOpen: boolean;
+  setAddDeviceModalOpen: (open: boolean) => void;
 
   terminalTabs: TerminalTabItem[];
   activeTerminalTabId: string;
@@ -78,8 +85,18 @@ export const useNetOpsStore = create<NetOpsState>((set, get) => ({
   currentTab: 'dashboard',
   setCurrentTab: (tab) => set({ currentTab: tab }),
 
+  // Clean empty state ready for real device onboarding
+  devices: [],
+  addDevice: (device) => set((state) => ({ devices: [device, ...state.devices] })),
+  removeDevice: (id) =>
+    set((state) => ({
+      devices: state.devices.filter((d) => d.id !== id),
+      selectedDevice: state.selectedDevice?.id === id ? null : state.selectedDevice,
+    })),
+
   selectedDevice: null,
-  setSelectedDevice: (device) => set({ selectedDevice: device, currentTab: device ? 'device-detail' : get().currentTab }),
+  setSelectedDevice: (device) =>
+    set({ selectedDevice: device, currentTab: device ? 'device-detail' : get().currentTab }),
   activeDeviceTab: 'overview',
   setActiveDeviceTab: (activeDeviceTab) => set({ activeDeviceTab }),
 
@@ -89,36 +106,15 @@ export const useNetOpsStore = create<NetOpsState>((set, get) => ({
   isAiDrawerOpen: false,
   setAiDrawerOpen: (isAiDrawerOpen) => set({ isAiDrawerOpen }),
 
-  terminalTabs: [
-    {
-      id: 'tab-core-01',
-      deviceId: '30000000-0000-0000-0000-000000000001',
-      name: 'CORE-JOGJA-01',
-      ip: '192.168.10.1',
-      status: 'ONLINE',
-      latencyMs: 1.2,
-    },
-    {
-      id: 'tab-core-02',
-      deviceId: '30000000-0000-0000-0000-000000000002',
-      name: 'CORE-JOGJA-02',
-      ip: '192.168.10.2',
-      status: 'ONLINE',
-      latencyMs: 1.4,
-    },
-    {
-      id: 'tab-sw-01',
-      deviceId: '30000000-0000-0000-0000-000000000004',
-      name: 'SW-JOGJA-01',
-      ip: '192.168.10.11',
-      status: 'ONLINE',
-      latencyMs: 2.5,
-    },
-  ],
-  activeTerminalTabId: 'tab-core-01',
+  isAddDeviceModalOpen: false,
+  setAddDeviceModalOpen: (isAddDeviceModalOpen) => set({ isAddDeviceModalOpen }),
+
+  // Clean terminal tabs
+  terminalTabs: [],
+  activeTerminalTabId: '',
 
   addTerminalTab: (device: Device) => {
-    const existing = get().terminalTabs.find(t => t.deviceId === device.id);
+    const existing = get().terminalTabs.find((t) => t.deviceId === device.id);
     if (existing) {
       set({ activeTerminalTabId: existing.id, currentTab: 'terminal' });
       return;
@@ -131,7 +127,7 @@ export const useNetOpsStore = create<NetOpsState>((set, get) => ({
       status: 'ONLINE',
       latencyMs: 1.8,
     };
-    set(state => ({
+    set((state) => ({
       terminalTabs: [...state.terminalTabs, newTab],
       activeTerminalTabId: newTab.id,
       currentTab: 'terminal',
@@ -139,8 +135,8 @@ export const useNetOpsStore = create<NetOpsState>((set, get) => ({
   },
 
   closeTerminalTab: (tabId: string) => {
-    set(state => {
-      const filtered = state.terminalTabs.filter(t => t.id !== tabId);
+    set((state) => {
+      const filtered = state.terminalTabs.filter((t) => t.id !== tabId);
       const newActive = filtered.length > 0 ? filtered[0]!.id : '';
       return {
         terminalTabs: filtered,

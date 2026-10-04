@@ -57,7 +57,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-noc-bg text-slate-100 overflow-hidden">
+    <div className="h-screen w-screen flex flex-col bg-[#070c18] text-slate-100 overflow-hidden font-sans">
       {/* Topbar */}
       <Topbar />
 
@@ -67,19 +67,19 @@ export const App: React.FC = () => {
         <Sidebar />
 
         {/* Dynamic Center Stage */}
-        <main className="flex-1 overflow-y-auto bg-noc-bg relative">
+        <main className="flex-1 overflow-y-auto bg-[#070c18] relative">
           {renderContent()}
         </main>
 
-        {/* Right AI Drawer Panel when open and not already in full AI Copilot tab */}
-        {isAiDrawerOpen && currentTab !== 'ai-copilot' && (
-          <aside className="w-96 border-l border-noc-border shadow-2xl z-20">
+        {/* Right AI Drawer Panel when open and not already in full AI Copilot tab or Dashboard */}
+        {isAiDrawerOpen && currentTab !== 'ai-copilot' && currentTab !== 'dashboard' && (
+          <aside className="w-96 border-l border-cyan-500/20 shadow-2xl z-20">
             <AICopilotDrawer />
           </aside>
         )}
       </div>
 
-      {/* Global Command Palette (Ctrl+Shift+P / Cmd+K) */}
+      {/* Global Command Palette (Ctrl+K / Cmd+K / Ctrl+Shift+P) */}
       <CommandPalette />
     </div>
   );

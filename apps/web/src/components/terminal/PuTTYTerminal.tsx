@@ -24,20 +24,11 @@ export const PuTTYTerminal: React.FC = () => {
     setActiveTerminalTabId,
     closeTerminalTab,
     addTerminalTab,
+    devices,
+    setAddDeviceModalOpen,
   } = useNetOpsStore();
 
-  const [terminalOutput, setTerminalOutput] = useState<Record<string, string[]>>({
-    'tab-core-01': [
-      '\x1b[36m  █████╗ ██╗   ██╗██████╗ ██╗██████╗  █████╗ \x1b[0m',
-      '\x1b[36m ██╔══██╗██║   ██║██╔══██╗██║██╔══██╗██╔══██╗\x1b[0m',
-      '\x1b[36m ███████║██║   ██║██║  ██║██║██████╔╝███████║\x1b[0m',
-      '\x1b[36m ██╔══██║██║   ██║██║  ██║██║██╔══██╗██╔══██║\x1b[0m',
-      '\x1b[36m ██║  ██║╚██████╔╝██████╔╝██║██║  ██║██║  ██║\x1b[0m  \x1b[33mNetOps Live Terminal\x1b[0m',
-      '\x1b[90mConnected to CORE-JOGJA-01 (MikroTik RouterOS v7.14.3 arm64) over SSH-2.0\x1b[0m',
-      '\x1b[90mSession secured & audited. Never enter plaintext private keys.\x1b[0m',
-      '',
-    ],
-  });
+  const [terminalOutput, setTerminalOutput] = useState<Record<string, string[]>>({});
 
   const [inputVal, setInputVal] = useState('');
   const [history, setHistory] = useState<string[]>([]);
@@ -47,6 +38,7 @@ export const PuTTYTerminal: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const activeTab = terminalTabs.find(t => t.id === activeTerminalTabId) || terminalTabs[0];
+
 
   useEffect(() => {
     terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -229,48 +221,72 @@ export const PuTTYTerminal: React.FC = () => {
       </div>
 
       {/* Terminal Screen Body */}
-      <div className={`flex-1 p-3 overflow-y-auto space-y-1 ${isSplit ? 'grid grid-cols-2 gap-2' : ''}`}>
-        {/* Primary Terminal View */}
-        <div
-          className="h-full overflow-y-auto cursor-text"
-          onClick={() => inputRef.current?.focus()}
-        >
-          {(terminalOutput[activeTab?.id || ''] || []).map((line, idx) => (
-            <div key={idx} className="whitespace-pre-wrap leading-relaxed text-slate-300">
-              {line}
-            </div>
-          ))}
-
-          {/* Interactive Command Input Line */}
-          <form onSubmit={handleCommandSubmit} className="flex items-center space-x-2 mt-2">
-            <span className="text-cyan-400 font-semibold whitespace-nowrap">
-              [admin@{activeTab?.name || 'router'}] &gt;
-            </span>
-            <input
-              ref={inputRef}
-              type="text"
-              value={inputVal}
-              onChange={e => setInputVal(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="flex-1 bg-transparent border-none outline-none text-emerald-300 font-mono text-xs caret-emerald-400"
-              autoFocus
-            />
-          </form>
-          <div ref={terminalEndRef} />
-        </div>
-
-        {/* Split View Secondary Console if enabled */}
-        {isSplit && (
-          <div className="border-l border-noc-border pl-3 h-full overflow-y-auto text-slate-400">
-            <div className="text-[10px] text-cyan-400 mb-2 border-b border-noc-border pb-1">
-              [Split Console: SW-JOGJA-01 Monitor Stream]
-            </div>
-            <div className="text-slate-500">Streaming passive interface packet drop logs...</div>
-            <div className="text-slate-400 mt-1">ether8 link rate: 100Mbps Full Duplex</div>
-            <div className="text-amber-400 mt-1">Warning: RX pause frame detected on port 8</div>
+      {terminalTabs.length === 0 || !activeTab ? (
+        <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-3 font-mono">
+          <div className="w-16 h-16 rounded-2xl bg-cyan-950/40 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.3)]">
+            <TerminalIcon className="w-8 h-8" />
           </div>
-        )}
-      </div>
+          <div>
+            <div className="text-white font-bold text-sm font-sans">Tidak Ada Sesi Terminal Aktif</div>
+            <div className="text-xs text-slate-400 mt-1 max-w-sm font-sans">
+              Tambahkan perangkat dari menu Devices atau klik tombol di bawah untuk membuka sesi SSH interaktif langsung.
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              if (devices.length > 0) {
+                addTerminalTab(devices[0]!);
+              } else {
+                setAddDeviceModalOpen(true);
+              }
+            }}
+            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md transition"
+          >
+            {devices.length > 0 ? `+ Buka Terminal ${devices[0]?.name}` : '+ Tambah Perangkat untuk Terminal'}
+          </button>
+        </div>
+      ) : (
+        <div className={`flex-1 p-3 overflow-y-auto space-y-1 ${isSplit ? 'grid grid-cols-2 gap-2' : ''}`}>
+          {/* Primary Terminal View */}
+          <div
+            className="h-full overflow-y-auto cursor-text"
+            onClick={() => inputRef.current?.focus()}
+          >
+            {(terminalOutput[activeTab?.id || ''] || []).map((line, idx) => (
+              <div key={idx} className="whitespace-pre-wrap leading-relaxed text-slate-300">
+                {line}
+              </div>
+            ))}
+
+            {/* Interactive Command Input Line */}
+            <form onSubmit={handleCommandSubmit} className="flex items-center space-x-2 mt-2">
+              <span className="text-cyan-400 font-semibold whitespace-nowrap">
+                [admin@{activeTab?.name || 'router'}] &gt;
+              </span>
+              <input
+                ref={inputRef}
+                type="text"
+                value={inputVal}
+                onChange={(e) => setInputVal(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="flex-1 bg-transparent border-none outline-none text-emerald-300 font-mono text-xs caret-emerald-400"
+                autoFocus
+              />
+            </form>
+            <div ref={terminalEndRef} />
+          </div>
+
+          {/* Split View Secondary Console if enabled */}
+          {isSplit && (
+            <div className="border-l border-noc-border pl-3 h-full overflow-y-auto text-slate-400">
+              <div className="text-[10px] text-cyan-400 mb-2 border-b border-noc-border pb-1">
+                [Split Console Monitor Stream]
+              </div>
+              <div className="text-slate-500">Streaming passive interface packet drop logs...</div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
