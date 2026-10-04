@@ -1,45 +1,38 @@
-# AUDIRA NetOps AI — System Architecture Specification
-
-## 1. Overview
-AUDIRA NetOps AI is a production-ready enterprise network operations platform combining WinBox-like node management, PuTTY-like live terminal clustering, real-time telemetry observability, disaster recovery diffing, and an autonomous AI Network Copilot.
+## 1. Core Architecture Flow
 
 ```
-+-----------------------------------------------------------------------------------+
-|                              AUDIRA WEB & DESKTOP (SPA)                           |
-|       React + Vite + Tailwind CSS + Lucide + Xterm.js + React Flow + Recharts     |
-+-----------------------------------------+-----------------------------------------+
-                                          |
-                               [REST / WebSocket /ws]
-                                          |
-+-----------------------------------------v-----------------------------------------+
-|                               AUDIRA API GATEWAY                                  |
-|               Express/NestJS + RBAC Guards + Structured Logger + JWT Auth         |
-+-------------------+---------------------+--------------------+--------------------+
-                    |                     |                    |
-        +-----------v-----------+         |         +----------v-----------+
-        |   AI COPILOT AGENT    |         |         |  TELEMETRY & METRICS |
-        |  (Ollama / Qwen2.5)   |         |         |  (Redis Time Series) |
-        +-----------+-----------+         |         +----------+-----------+
-                    |                     |                    |
-        +-----------v-----------+         |                    |
-        |  SAFETY PIPELINE &    |         |                    |
-        |  RISK ENGINE (9-Step) |         |                    |
-        +-----------+-----------+         |                    |
-                    |                     |                    |
-                    +------------------+  |  +-----------------+
-                                       |  |  |
-                        +--------------v--v--v-------------+
-                        |     DEVICE CONNECTOR LAYER       |
-                        |   MikroTik API-SSL / REST / SSH  |
-                        +--------------+-------------------+
-                                       |
-                   +-------------------+-------------------+
-                   |                   |                   |
-        +----------v--------+ +--------v-------+ +---------v--------+
-        | MikroTik RouterOS | | Generic Linux  | | Cisco / Juniper  |
-        | (CCR, RB5009, CRS)| | (Ubuntu Server)| | (Future Ext.)    |
-        +-------------------+ +----------------+ +------------------+
+                      AUDIRA NETOPS AI
+                              │
+                        React / Tauri
+                              │
+                         API Gateway
+                              │
+                 ┌────────────┼────────────┐
+                 │            │            │
+              Device       Terminal       AI
+              Manager        Engine       Agent
+                 │            │            │
+                 └────────────┼────────────┘
+                              │
+                       Security Layer
+                              │
+                     Policy + Risk Engine
+                              │
+                        Connector Layer
+                              │
+           ┌──────────────────┼───────────────────┐
+           │                  │                   │
+       RouterOS API         REST                SSH
+           │                  │                   │
+           └──────────────────┼───────────────────┘
+                              │
+                           NETWORK
 ```
+
+### Critical Architecture Decision:
+1. **No Direct Network Access for AI**: Subsystems (`Device Manager`, `Terminal Engine`, and `AI Agent`) NEVER have direct, unmediated access to physical routers or switches.
+2. **Mandatory Security Layer Gate**: All command proposals and queries must traverse the **Security Layer (Policy + Risk Engine)** before reaching the **Connector Layer**.
+3. **Unified RouterOS Connector Foundation**: Because the MikroTik RouterOS API mirrors console syntax and concepts, a single robust `RouterOSConnector` serves as the shared foundation for both device management and registered AI agent tools.
 
 ## 2. 9-Step AI Execution Safety Pipeline
 AI NEVER communicates directly with hardware. Every command follows:

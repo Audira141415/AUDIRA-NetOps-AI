@@ -67,21 +67,32 @@ export const Topbar: React.FC = () => {
         </button>
       </div>
 
-      {/* Right Controls: AI status, Connection status, Alerts, User */}
+      {/* Right Controls: Device count, AI status, Connection status, Alerts, User */}
       <div className="flex items-center space-x-3">
-        {/* Connection status */}
-        <div className="hidden md:flex items-center space-x-2 px-2.5 py-1 rounded bg-noc-surface/60 border border-noc-border text-xs font-mono">
-          <Wifi className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-          <span className="text-slate-300">WS Connected</span>
-          <span className="text-slate-500">|</span>
-          <span className="text-emerald-400">1.8ms</span>
+        {/* Device Status Pill matching User ASCII: ● 42 DEVICES */}
+        <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded bg-noc-surface border border-noc-border text-xs font-mono">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-slate-200 font-bold">42 DEVICES</span>
         </div>
 
-        {/* AI Model Status */}
-        <div className="flex items-center space-x-2 px-2.5 py-1 rounded bg-noc-surface/60 border border-noc-border text-xs font-mono">
-          <Cpu className="w-3.5 h-3.5 text-cyan-400" />
-          <span className="text-slate-300">Ollama:</span>
-          <span className="text-cyan-400">qwen2.5:7b</span>
+        {/* AI Status Pill: 🤖 AI */}
+        <button
+          onClick={() => setAiDrawerOpen(!isAiDrawerOpen)}
+          className={`flex items-center space-x-1.5 px-2.5 py-1 rounded border text-xs font-mono font-medium transition ${
+            isAiDrawerOpen
+              ? 'bg-cyan-500/20 border-cyan-500 text-cyan-300 shadow glow-cyan'
+              : 'bg-noc-surface hover:bg-noc-surface/80 border-noc-border text-slate-300'
+          }`}
+        >
+          <Bot className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="font-semibold text-cyan-300">AI</span>
+          <span className="text-[10px] text-slate-400 hidden lg:inline">(qwen2.5:7b)</span>
+        </button>
+
+        {/* Connection status */}
+        <div className="hidden md:flex items-center space-x-2 px-2.5 py-1 rounded bg-noc-surface/60 border border-noc-border text-xs font-mono">
+          <Wifi className="w-3.5 h-3.5 text-emerald-400" />
+          <span className="text-emerald-400">1.8ms</span>
         </div>
 
         {/* AI Copilot Drawer Toggle */}

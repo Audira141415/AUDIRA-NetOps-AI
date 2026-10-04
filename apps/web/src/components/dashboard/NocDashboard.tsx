@@ -1,6 +1,7 @@
 // Enterprise NOC Dashboard Component
+// Designed according to AUDIRA NetOps AI Layout: Network Health + Topology Tree + Incidents + Integrated AI Copilot
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Server,
   Activity,
@@ -11,8 +12,15 @@ import {
   Zap,
   TrendingUp,
   Cpu,
-  ShieldAlert,
   ChevronRight,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Sparkles,
+  ArrowRight,
+  Shield,
+  Layers,
+  Network,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -21,8 +29,6 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  BarChart,
-  Bar,
 } from 'recharts';
 import { useNetOpsStore } from '../../store/useNetOpsStore';
 
@@ -36,307 +42,359 @@ const MOCK_TRAFFIC_DATA = [
   { time: '14:00', rx: 842, tx: 712 },
 ];
 
-const MOCK_DEVICE_HEALTH = [
-  { name: 'CORE-01', cpu: 16.5, mem: 42 },
-  { name: 'CORE-02', cpu: 14.2, mem: 40 },
-  { name: 'EDGE-01', cpu: 28.0, mem: 55 },
-  { name: 'SW-01', cpu: 32.1, mem: 48 },
-  { name: 'SW-02', cpu: 38.5, mem: 62 },
-  { name: 'AP-01', cpu: 9.5, mem: 25 },
-  { name: 'SRV-01', cpu: 11.0, mem: 34 },
-];
-
 export const NocDashboard: React.FC = () => {
   const { setCurrentTab, setAiDrawerOpen } = useNetOpsStore();
+  const [copilotExpanded, setCopilotExpanded] = useState(true);
+  const [activeQuery, setActiveQuery] = useState('Kenapa CORE-02 mengalami packet loss?');
+  const [isDiagnosing, setIsDiagnosing] = useState(false);
+
+  const runDiagnosis = (query: string) => {
+    setActiveQuery(query);
+    setIsDiagnosing(true);
+    setTimeout(() => {
+      setIsDiagnosing(false);
+    }, 600);
+  };
 
   return (
-    <div className="p-4 space-y-4 overflow-y-auto max-h-[calc(100vh-3.5rem)]">
-      {/* Top NOC Telemetry KPI Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        {/* Total Devices */}
-        <div className="bg-noc-panel border border-noc-border rounded-lg p-3">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-mono">
-            <span>TOTAL NODES</span>
-            <Server className="w-3.5 h-3.5 text-cyan-400" />
-          </div>
-          <div className="mt-1 flex items-baseline space-x-2">
-            <span className="text-2xl font-bold font-mono text-white">7</span>
-            <span className="text-[10px] text-emerald-400 font-mono">6 ONLINE</span>
-          </div>
-          <div className="text-[10px] text-amber-400 font-mono mt-0.5">1 WARNING · 0 OFFLINE</div>
-        </div>
-
-        {/* CPU Average */}
-        <div className="bg-noc-panel border border-noc-border rounded-lg p-3">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-mono">
-            <span>AVG CPU LOAD</span>
-            <Cpu className="w-3.5 h-3.5 text-emerald-400" />
-          </div>
-          <div className="mt-1 flex items-baseline space-x-2">
-            <span className="text-2xl font-bold font-mono text-emerald-400">22.4%</span>
-            <span className="text-[10px] text-slate-400 font-mono">Peak 38%</span>
-          </div>
-          <div className="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
-            <div className="bg-emerald-500 h-full rounded-full" style={{ width: '22.4%' }} />
-          </div>
-        </div>
-
-        {/* Memory Average */}
-        <div className="bg-noc-panel border border-noc-border rounded-lg p-3">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-mono">
-            <span>AVG MEMORY</span>
-            <Activity className="w-3.5 h-3.5 text-cyan-400" />
-          </div>
-          <div className="mt-1 flex items-baseline space-x-2">
-            <span className="text-2xl font-bold font-mono text-cyan-400">44.8%</span>
-            <span className="text-[10px] text-slate-400 font-mono">Healthy</span>
-          </div>
-          <div className="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
-            <div className="bg-cyan-500 h-full rounded-full" style={{ width: '44.8%' }} />
-          </div>
-        </div>
-
-        {/* Traffic Throughput */}
-        <div className="bg-noc-panel border border-noc-border rounded-lg p-3">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-mono">
-            <span>AGGREGATE RX/TX</span>
-            <TrendingUp className="w-3.5 h-3.5 text-cyan-400" />
-          </div>
-          <div className="mt-1 flex items-center space-x-3 text-xs font-mono">
-            <div className="flex items-center text-emerald-400">
-              <ArrowDownLeft className="w-3.5 h-3.5 mr-0.5" />
-              <span>842M</span>
+    <div className="p-4 space-y-4 overflow-y-auto max-h-[calc(100vh-3.5rem)] select-none">
+      {/* SECTION 1: NETWORK HEALTH STATUS BAR (Matching User ASCII) */}
+      <div className="bg-noc-panel border border-noc-border rounded-lg p-4 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-noc-border pb-3 mb-3">
+          <div>
+            <div className="text-[10px] font-mono uppercase tracking-widest text-cyan-400 font-semibold">
+              ENTERPRISE OBSERVABILITY
             </div>
-            <div className="flex items-center text-cyan-400">
-              <ArrowUpRight className="w-3.5 h-3.5 mr-0.5" />
-              <span>712M</span>
+            <h1 className="text-base font-bold text-white font-mono flex items-center space-x-2">
+              <span>NETWORK HEALTH</span>
+              <span className="text-slate-500 font-normal">|</span>
+              <span className="text-xs font-normal text-slate-300">42 Monitored Devices</span>
+            </h1>
+          </div>
+
+          {/* 39 ONLINE   2 WARNING   1 OFFLINE (ASCII Match) */}
+          <div className="flex items-center space-x-2 font-mono text-xs">
+            <div className="flex items-center space-x-1.5 px-3 py-1 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span className="font-bold">39 ONLINE</span>
+            </div>
+            <div className="flex items-center space-x-1.5 px-3 py-1 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400">
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+              <span className="font-bold">2 WARNING</span>
+            </div>
+            <div className="flex items-center space-x-1.5 px-3 py-1 rounded bg-rose-500/10 border border-rose-500/30 text-rose-400">
+              <span className="w-2 h-2 rounded-full bg-rose-400" />
+              <span className="font-bold">1 OFFLINE</span>
             </div>
           </div>
-          <div className="text-[10px] text-slate-500 font-mono mt-1">Transit 10G SFP+</div>
         </div>
 
-        {/* Latency & Packet Loss */}
-        <div className="bg-noc-panel border border-noc-border rounded-lg p-3">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-mono">
-            <span>LATENCY / LOSS</span>
-            <Zap className="w-3.5 h-3.5 text-amber-400" />
+        {/* Dense Telemetry KPIs */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 text-xs font-mono">
+          <div className="p-2.5 rounded bg-noc-surface border border-noc-border">
+            <span className="text-slate-400 text-[10px] block">AVG CPU LOAD</span>
+            <span className="text-lg font-bold text-emerald-400">22.4%</span>
+            <span className="text-[10px] text-slate-500 block">Peak: SW-07 (74%)</span>
           </div>
-          <div className="mt-1 flex items-baseline space-x-2">
-            <span className="text-2xl font-bold font-mono text-white">2.1<span className="text-sm">ms</span></span>
-            <span className="text-[10px] text-amber-400 font-mono">0.2% LOSS</span>
-          </div>
-          <div className="text-[10px] text-slate-500 font-mono mt-0.5">Jitter: 0.4ms</div>
-        </div>
 
-        {/* Active Alerts */}
-        <div className="bg-noc-panel border border-amber-500/30 rounded-lg p-3 bg-amber-500/5 cursor-pointer" onClick={() => setCurrentTab('alerts')}>
-          <div className="flex items-center justify-between text-amber-400 text-xs font-mono">
-            <span>ACTIVE ALERTS</span>
-            <AlertTriangle className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+          <div className="p-2.5 rounded bg-noc-surface border border-noc-border">
+            <span className="text-slate-400 text-[10px] block">AVG MEMORY</span>
+            <span className="text-lg font-bold text-cyan-400">44.8%</span>
+            <span className="text-[10px] text-slate-500 block">3.2 GB Free</span>
           </div>
-          <div className="mt-1 flex items-baseline space-x-2">
-            <span className="text-2xl font-bold font-mono text-amber-400">2</span>
-            <span className="text-[10px] text-amber-300 font-mono">1 WARNING · 1 INFO</span>
+
+          <div className="p-2.5 rounded bg-noc-surface border border-noc-border">
+            <span className="text-slate-400 text-[10px] block">TRANSIT RX RATE</span>
+            <span className="text-lg font-bold text-emerald-400">842 Mbps</span>
+            <span className="text-[10px] text-slate-500 block">SFP+ 10G Link</span>
           </div>
-          <div className="text-[10px] text-slate-400 font-mono mt-0.5 hover:text-white flex items-center">
-            <span>Review incidents</span>
-            <ChevronRight className="w-3 h-3 ml-0.5" />
+
+          <div className="p-2.5 rounded bg-noc-surface border border-noc-border">
+            <span className="text-slate-400 text-[10px] block">TRANSIT TX RATE</span>
+            <span className="text-lg font-bold text-cyan-400">712 Mbps</span>
+            <span className="text-[10px] text-slate-500 block">Telkom Transit</span>
+          </div>
+
+          <div className="p-2.5 rounded bg-noc-surface border border-noc-border">
+            <span className="text-slate-400 text-[10px] block">CORE LATENCY</span>
+            <span className="text-lg font-bold text-white">2.1 ms</span>
+            <span className="text-[10px] text-slate-500 block">Jitter: 0.4ms</span>
+          </div>
+
+          <div className="p-2.5 rounded bg-noc-surface border border-amber-500/30 text-amber-400">
+            <span className="text-amber-400/80 text-[10px] block">PACKET LOSS</span>
+            <span className="text-lg font-bold text-amber-400">1.4%</span>
+            <span className="text-[10px] text-amber-400/70 block">On CORE-02 / SW02</span>
           </div>
         </div>
       </div>
 
-      {/* Main Charts Row */}
+      {/* SECTION 2: TOPOLOGY TREE + ACTIVE INCIDENTS (ASCII Match) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Realtime Traffic Chart */}
+        {/* Topology ASCII/Tree Visualizer */}
         <div className="lg:col-span-2 bg-noc-panel border border-noc-border rounded-lg p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <h2 className="text-sm font-semibold text-white">Network Traffic Throughput (RX / TX)</h2>
-              <p className="text-xs text-slate-400 font-mono">Live bandwidth rate sampled across Core Interfaces</p>
+          <div className="flex items-center justify-between mb-3 border-b border-noc-border pb-2">
+            <div className="flex items-center space-x-2">
+              <Network className="w-4 h-4 text-cyan-400" />
+              <h2 className="text-xs font-bold text-white font-mono uppercase tracking-wider">
+                Active Topology Map
+              </h2>
             </div>
-            <div className="flex items-center space-x-4 text-xs font-mono">
-              <div className="flex items-center space-x-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                <span className="text-slate-300">RX (Mbps)</span>
-              </div>
-              <div className="flex items-center space-x-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-cyan-500" />
-                <span className="text-slate-300">TX (Mbps)</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={MOCK_TRAFFIC_DATA}>
-                <defs>
-                  <linearGradient id="colorRx" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="colorTx" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#06B6D4" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#06B6D4" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="time" stroke="#475569" fontSize={11} fontStyle="JetBrains Mono" />
-                <YAxis stroke="#475569" fontSize={11} fontStyle="JetBrains Mono" />
-                <Tooltip contentStyle={{ backgroundColor: '#0e1422', borderColor: '#1e293b', fontSize: '11px', fontFamily: 'JetBrains Mono' }} />
-                <Area type="monotone" dataKey="rx" stroke="#10B981" strokeWidth={2} fillOpacity={1} fill="url(#colorRx)" />
-                <Area type="monotone" dataKey="tx" stroke="#06B6D4" strokeWidth={2} fillOpacity={1} fill="url(#colorTx)" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Device Health CPU/Mem Distribution */}
-        <div className="bg-noc-panel border border-noc-border rounded-lg p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <h2 className="text-sm font-semibold text-white">Node Health Distribution</h2>
-              <p className="text-xs text-slate-400 font-mono">CPU Load % per active node</p>
-            </div>
-          </div>
-          <div className="h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={MOCK_DEVICE_HEALTH} layout="vertical">
-                <XAxis type="number" domain={[0, 100]} stroke="#475569" fontSize={10} />
-                <YAxis dataKey="name" type="category" stroke="#475569" fontSize={10} width={65} />
-                <Tooltip contentStyle={{ backgroundColor: '#0e1422', borderColor: '#1e293b', fontSize: '11px', fontFamily: 'JetBrains Mono' }} />
-                <Bar dataKey="cpu" fill="#06B6D4" radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Row: Topology Mini-Map, AI Recommendations, Recent Activities */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Topology Mini-Map Preview */}
-        <div className="bg-noc-panel border border-noc-border rounded-lg p-4">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-sm font-semibold text-white">Topology Mini-Map</h2>
             <button
               onClick={() => setCurrentTab('topology')}
-              className="text-xs text-cyan-400 hover:text-cyan-300 font-mono flex items-center"
+              className="text-xs text-cyan-400 hover:text-cyan-300 font-mono flex items-center space-x-1"
             >
-              <span>Full Graph</span>
-              <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
+              <span>Open React Flow Canvas</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div
-            onClick={() => setCurrentTab('topology')}
-            className="h-44 bg-noc-surface rounded border border-noc-border flex items-center justify-center cursor-pointer relative overflow-hidden group"
+          {/* ASCII / Graphical Node Tree */}
+          <div className="bg-[#050810] border border-noc-border rounded-lg p-4 font-mono text-xs flex flex-col items-center justify-center relative min-h-[200px]">
+            {/* ISP Node */}
+            <div className="px-3 py-1 rounded bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold shadow">
+              🌐 ISP Transit (AS64512)
+            </div>
+
+            {/* Downlink Line */}
+            <div className="w-0.5 h-6 bg-emerald-500" />
+
+            {/* Core Routers MLAG */}
+            <div className="flex items-center space-x-10">
+              <div
+                onClick={() => setCurrentTab('devices')}
+                className="px-3 py-1.5 rounded bg-noc-panel border border-emerald-500/50 text-emerald-400 cursor-pointer hover:border-emerald-400 shadow glow-emerald"
+              >
+                CORE-01 <span className="text-[10px] text-slate-400">(192.168.10.1)</span>
+              </div>
+
+              <div className="text-slate-600 text-[10px]">◄ 10G MLAG ►</div>
+
+              <div
+                onClick={() => setCurrentTab('devices')}
+                className="px-3 py-1.5 rounded bg-noc-panel border border-amber-500 text-amber-400 cursor-pointer hover:border-amber-300 shadow glow-amber animate-pulse"
+              >
+                CORE-02 <span className="text-[10px] text-slate-400">(Loss 1.4%)</span>
+              </div>
+            </div>
+
+            {/* Branching down to switches */}
+            <div className="flex items-center space-x-32 my-1 text-slate-600">
+              <div>│</div>
+              <div>│</div>
+            </div>
+
+            {/* Access Switches */}
+            <div className="flex items-center space-x-16">
+              <div className="px-3 py-1.5 rounded bg-noc-panel border border-cyan-500/50 text-cyan-300 text-xs">
+                SW01 <span className="text-[10px] text-slate-400">(Dist)</span>
+              </div>
+
+              <div className="px-3 py-1.5 rounded bg-noc-panel border border-amber-500/50 text-amber-300 text-xs">
+                SW02 <span className="text-[10px] text-slate-400">(Drops)</span>
+              </div>
+
+              <div className="px-3 py-1.5 rounded bg-noc-panel border border-slate-700 text-slate-400 text-xs">
+                SW07 <span className="text-[10px] text-amber-400">(CPU 74%)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Alerts (Matching User ASCII: 🔴 Packet loss CORE-02, 🟡 CPU SW-07) */}
+        <div className="bg-noc-panel border border-noc-border rounded-lg p-4 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-3 border-b border-noc-border pb-2">
+              <div className="flex items-center space-x-2">
+                <AlertTriangle className="w-4 h-4 text-amber-400" />
+                <h2 className="text-xs font-bold text-white font-mono uppercase tracking-wider">
+                  Active Alerts &amp; Incidents
+                </h2>
+              </div>
+              <button
+                onClick={() => setCurrentTab('alerts')}
+                className="text-[11px] text-cyan-400 hover:text-cyan-300 font-mono"
+              >
+                View All
+              </button>
+            </div>
+
+            <div className="space-y-2.5 font-mono text-xs">
+              {/* Alert 1: Packet loss CORE-02 (RED) */}
+              <div
+                onClick={() => runDiagnosis('Kenapa CORE-02 mengalami packet loss?')}
+                className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/40 text-rose-300 cursor-pointer hover:bg-rose-500/15 transition"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-bold flex items-center space-x-1.5">
+                    <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
+                    <span>🔴 Packet loss CORE-02</span>
+                  </span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-950/60 text-rose-300 border border-rose-800">
+                    1.4% LOSS
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-300 font-sans mt-1">
+                  Downlink interface queue drops on interconnect to SW02 port ether8.
+                </p>
+                <div className="mt-2 text-[10px] text-cyan-400 flex items-center space-x-1">
+                  <Sparkles className="w-3 h-3" />
+                  <span>Click to diagnose with AI Copilot</span>
+                </div>
+              </div>
+
+              {/* Alert 2: CPU SW-07 (YELLOW) */}
+              <div
+                onClick={() => runDiagnosis('Analisis kenapa CPU switch SW-07 tinggi?')}
+                className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/40 text-amber-300 cursor-pointer hover:bg-amber-500/15 transition"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-bold flex items-center space-x-1.5">
+                    <span className="w-2 h-2 rounded-full bg-amber-400" />
+                    <span>🟡 CPU SW-07</span>
+                  </span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-950/60 text-amber-300 border border-amber-800">
+                    74% LOAD
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-300 font-sans mt-1">
+                  Spanning Tree RSTP convergence recalculation causing temporary spike.
+                </p>
+                <div className="mt-2 text-[10px] text-cyan-400 flex items-center space-x-1">
+                  <Sparkles className="w-3 h-3" />
+                  <span>Click to diagnose with AI Copilot</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-3 border-t border-noc-border text-[10px] text-slate-500 font-mono flex items-center justify-between">
+            <span>Detection: SNMP + ICMP Streamer</span>
+            <span>Policy: Auto-Triage Active</span>
+          </div>
+        </div>
+      </div>
+
+      {/* SECTION 3: INTEGRATED 🤖 AI COPILOT WORKSPACE (Matching User ASCII) */}
+      <div className="bg-noc-panel border border-cyan-500/30 rounded-lg p-4 shadow-lg glow-cyan">
+        <div className="flex items-center justify-between border-b border-noc-border pb-3 mb-3">
+          <div className="flex items-center space-x-2.5">
+            <div className="w-7 h-7 rounded bg-cyan-950 border border-cyan-700 flex items-center justify-center text-cyan-300">
+              <Bot className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="font-bold text-sm text-white font-mono flex items-center space-x-2">
+                <span>🤖 AI COPILOT WORKSPACE</span>
+                <span className="text-[10px] font-normal px-2 py-0.5 rounded bg-cyan-950/80 border border-cyan-800 text-cyan-300">
+                  Ollama: qwen2.5:7b
+                </span>
+                <span className="text-[10px] font-normal px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-800 text-emerald-300">
+                  Tool-Governed Safety Pipeline
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setAiDrawerOpen(true)}
+            className="text-xs text-cyan-400 hover:text-cyan-300 font-mono flex items-center space-x-1"
           >
-            {/* SVG Visual preview */}
-            <div className="absolute inset-0 bg-grid-pattern opacity-30" />
-            <div className="z-10 flex flex-col items-center">
-              <div className="flex items-center space-x-8 mb-4">
-                <div className="px-2 py-1 rounded bg-slate-800 border border-emerald-500/50 text-[10px] font-mono text-emerald-400">
-                  CORE-01
-                </div>
-                <div className="px-2 py-1 rounded bg-slate-800 border border-emerald-500/50 text-[10px] font-mono text-emerald-400">
-                  CORE-02
-                </div>
-              </div>
-              <div className="flex items-center space-x-6">
-                <div className="px-2 py-1 rounded bg-slate-800 border border-cyan-500/50 text-[10px] font-mono text-cyan-400">
-                  SW-01
-                </div>
-                <div className="px-2 py-1 rounded bg-slate-800 border border-amber-500/50 text-[10px] font-mono text-amber-400">
-                  SW-02 (Loss)
-                </div>
-              </div>
-            </div>
-            <div className="absolute bottom-2 right-2 text-[10px] font-mono text-slate-400 bg-black/60 px-2 py-0.5 rounded">
-              Click to Open Interactive Map
-            </div>
-          </div>
+            <span>Expand Full Chat Drawer</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
         </div>
 
-        {/* AI Copilot Recommendations */}
-        <div className="bg-noc-panel border border-noc-border rounded-lg p-4">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center space-x-1.5">
-              <Bot className="w-4 h-4 text-cyan-400" />
-              <h2 className="text-sm font-semibold text-white">AI Copilot Insights</h2>
+        {/* Active Diagnostic Case (Matching User ASCII) */}
+        <div className="space-y-3 font-mono text-xs">
+          {/* Operator Question */}
+          <div className="p-3 rounded-lg bg-noc-surface border border-noc-border flex items-start space-x-3">
+            <span className="text-cyan-400 font-bold uppercase text-[10px] mt-0.5">QUESTION:</span>
+            <div className="text-white text-xs font-sans font-medium flex-1">
+              "{activeQuery}"
             </div>
             <button
-              onClick={() => {
-                setAiDrawerOpen(true);
-                setCurrentTab('ai-copilot');
-              }}
-              className="text-xs text-cyan-400 hover:text-cyan-300 font-mono"
+              onClick={() => runDiagnosis(activeQuery)}
+              className="text-[10px] px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 font-mono transition"
             >
-              Open Copilot
+              Re-run Checks
             </button>
           </div>
 
-          <div className="space-y-2.5">
-            <div className="p-2.5 rounded bg-noc-surface border border-noc-border text-xs">
-              <div className="flex items-center justify-between text-amber-400 font-mono text-[11px] mb-1">
-                <span>SW-JOGJA-02 · Interface ether8</span>
-                <span className="px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30">RISK: MEDIUM</span>
+          {/* 4 Tool Verification Checks (Matching User ASCII) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+            {/* Check 1 */}
+            <div className="p-2.5 rounded bg-[#050810] border border-noc-border">
+              <div className="flex items-center space-x-1.5 text-emerald-400 font-bold mb-1">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>✓ Interface check</span>
               </div>
-              <p className="text-slate-300 text-xs leading-relaxed">
-                Elevated packet loss (1.4%) detected. Recommend checking interface queue limits or verifying cable link negotiation.
-              </p>
+              <div className="text-[11px] text-slate-300">
+                ether8 link up (1Gbps Full Duplex). RX drop counter elevated: 1.4%.
+              </div>
             </div>
 
-            <div className="p-2.5 rounded bg-noc-surface border border-noc-border text-xs">
-              <div className="flex items-center justify-between text-cyan-400 font-mono text-[11px] mb-1">
-                <span>BGP Peer Optimization</span>
-                <span className="px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30">PROPOSAL</span>
+            {/* Check 2 */}
+            <div className="p-2.5 rounded bg-[#050810] border border-noc-border">
+              <div className="flex items-center space-x-1.5 text-emerald-400 font-bold mb-1">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>✓ Route check</span>
               </div>
-              <p className="text-slate-300 text-xs leading-relaxed">
-                AS64512 transit peer latency is optimal at 1.2ms. Route reflectors are synchronized across CORE-JOGJA-01/02.
-              </p>
+              <div className="text-[11px] text-slate-300">
+                Default 0.0.0.0/0 valid. BGP peering with AS64512 active &amp; synced.
+              </div>
+            </div>
+
+            {/* Check 3 */}
+            <div className="p-2.5 rounded bg-[#050810] border border-noc-border">
+              <div className="flex items-center space-x-1.5 text-emerald-400 font-bold mb-1">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>✓ Ping test</span>
+              </div>
+              <div className="text-[11px] text-slate-300">
+                ISP gateway RTT 1.2ms (0% loss). Downlink SW02 port drops packets.
+              </div>
+            </div>
+
+            {/* Check 4 */}
+            <div className="p-2.5 rounded bg-[#050810] border border-noc-border">
+              <div className="flex items-center space-x-1.5 text-emerald-400 font-bold mb-1">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>✓ Log analysis</span>
+              </div>
+              <div className="text-[11px] text-slate-300">
+                Buffer saturation in simple queue during peak hour traffic burst.
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Recent Activities & Audit Trail */}
-        <div className="bg-noc-panel border border-noc-border rounded-lg p-4">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-sm font-semibold text-white">Recent NOC Operations</h2>
-            <button
-              onClick={() => setCurrentTab('audit')}
-              className="text-xs text-cyan-400 hover:text-cyan-300 font-mono"
-            >
-              All Logs
-            </button>
-          </div>
-
-          <div className="space-y-2 text-xs font-mono">
-            <div className="p-2 rounded bg-noc-surface/60 border border-noc-border flex items-start justify-between">
-              <div>
-                <div className="text-slate-200">CONFIG_APPLY · CORE-JOGJA-01</div>
-                <div className="text-[10px] text-slate-500">by admin · 35 min ago</div>
-              </div>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                SUCCESS
+          {/* AI Synthesis & Action Recommendation */}
+          <div className="p-3 rounded-lg bg-cyan-950/30 border border-cyan-800/40 text-slate-200">
+            <div className="flex items-center justify-between mb-1 text-[11px]">
+              <span className="text-cyan-400 font-bold flex items-center space-x-1">
+                <Sparkles className="w-3 h-3" />
+                <span>AI ROOT CAUSE CONCLUSION:</span>
+              </span>
+              <span className="px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 border border-orange-500/40 font-bold text-[10px]">
+                ACTION RISK: HIGH
               </span>
             </div>
+            <p className="text-xs font-sans text-slate-300 leading-relaxed">
+              CORE-02 is dropping traffic destined for SW02 because the interface buffer on port <code className="text-cyan-300 bg-slate-900 px-1 py-0.5 rounded">ether8</code> has reached its default queue limit. Upstream transit connectivity is completely normal.
+            </p>
 
-            <div className="p-2 rounded bg-noc-surface/60 border border-noc-border flex items-start justify-between">
-              <div>
-                <div className="text-slate-200">REBOOT_BLOCKED · SW-JOGJA-02</div>
-                <div className="text-[10px] text-slate-500">Risk Engine Dual Signoff · 1h ago</div>
+            <div className="mt-2.5 pt-2 border-t border-cyan-900/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="text-[11px] text-slate-400 font-mono">
+                Proposed Command: <code className="text-emerald-400 font-mono">/queue interface set ether8 queue=ethernet-default</code>
               </div>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/30">
-                BLOCKED
-              </span>
-            </div>
 
-            <div className="p-2 rounded bg-noc-surface/60 border border-noc-border flex items-start justify-between">
-              <div>
-                <div className="text-slate-200">BACKUP_CREATE · Nightly</div>
-                <div className="text-[10px] text-slate-500">Auto RSC snapshot · 4h ago</div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => alert('Change safety pipeline: Creating snapshot backup -> Generating visual diff -> Requesting operator confirmation.')}
+                  className="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow glow-emerald transition"
+                >
+                  Remediate with Safety Pipeline
+                </button>
               </div>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
-                SAVED
-              </span>
             </div>
           </div>
         </div>
