@@ -326,3 +326,10 @@ CREATE INDEX idx_audit_created ON audit_logs(created_at DESC);
 CREATE INDEX idx_audit_user ON audit_logs(user_id);
 CREATE INDEX idx_audit_device ON audit_logs(device_id);
 CREATE INDEX idx_audit_risk ON audit_logs(risk_level);
+
+-- 15. Convenient Views & Schema Aliases
+CREATE OR REPLACE VIEW monitoring_metrics AS SELECT * FROM metrics;
+CREATE OR REPLACE VIEW command_history AS SELECT * FROM terminal_commands;
+CREATE OR REPLACE VIEW commands AS SELECT * FROM terminal_commands;
+CREATE OR REPLACE VIEW credentials AS SELECT * FROM device_credentials;
+
