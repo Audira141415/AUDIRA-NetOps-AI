@@ -16,10 +16,21 @@ import { AlertsView } from './components/alerts/AlertsView';
 import { AutomationView } from './components/automation/AutomationView';
 import { SettingsView } from './components/settings/SettingsView';
 import { AICopilotDrawer } from './components/ai/AICopilotDrawer';
+import { LandingPage } from './components/landing/LandingPage';
 import { useNetOpsStore } from './store/useNetOpsStore';
 
 export const App: React.FC = () => {
   const { currentTab, selectedDevice, isAiDrawerOpen } = useNetOpsStore();
+
+  // If on public landing page, render full viewport landing page
+  if (currentTab === 'landing') {
+    return (
+      <div className="h-screen w-screen overflow-y-auto bg-[#060a16] text-slate-100 font-sans">
+        <LandingPage />
+        <CommandPalette />
+      </div>
+    );
+  }
 
   const renderContent = () => {
     if (selectedDevice && currentTab === 'device-detail') {

@@ -8,6 +8,7 @@ import {
   User as UserIcon,
   Moon,
   Share2,
+  Globe,
 } from 'lucide-react';
 import { useNetOpsStore } from '../../store/useNetOpsStore';
 
@@ -119,6 +120,16 @@ export const Topbar: React.FC = () => {
               {activeAlerts.length}
             </span>
           )}
+        </button>
+
+        {/* Public Landing & License Button */}
+        <button
+          onClick={() => setCurrentTab('landing')}
+          className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-950/70 hover:bg-indigo-900 border border-indigo-500/40 text-indigo-200 text-xs font-semibold transition shadow-sm"
+          title="Lihat Landing Page & Sertifikat Lisensi AUDIRA"
+        >
+          <Globe className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="hidden sm:inline">Landing Page</span>
         </button>
 
         {/* Dark Mode Icon */}

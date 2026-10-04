@@ -4,6 +4,7 @@ import { Device, Alert, NetworkHealthSummary } from '@audira/types';
 export type { Device, Alert, NetworkHealthSummary };
 
 export type NavigationTab =
+  | 'landing'
   | 'dashboard'
   | 'devices'
   | 'device-detail'
@@ -82,7 +83,7 @@ interface NetOpsState {
 }
 
 export const useNetOpsStore = create<NetOpsState>((set, get) => ({
-  currentTab: 'dashboard',
+  currentTab: 'landing',
   setCurrentTab: (tab) => set({ currentTab: tab }),
 
   // Clean empty state ready for real device onboarding
