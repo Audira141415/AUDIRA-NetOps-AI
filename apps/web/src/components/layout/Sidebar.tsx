@@ -136,9 +136,14 @@ export const Sidebar: React.FC = () => {
           </div>
         </div>
 
-        <div className="pt-1.5 text-[9px] text-slate-500 text-center font-sans tracking-tight">
-          AUDIRA NetOps AI v1.0 <br /> © 2025
-        </div>
+        <button
+          onClick={() => setCurrentTab('landing')}
+          className="w-full pt-1.5 text-[10px] text-cyan-400/80 hover:text-cyan-300 text-center font-sans tracking-tight hover:underline cursor-pointer"
+          title="Buka Landing Page & Info Lisensi Komersial AUDIRA"
+        >
+          AUDIRA NetOps AI v1.0 <br />
+          <span className="text-[9px] text-slate-500">© 2025-2026 Agus Dwi R (Proprietary)</span>
+        </button>
       </div>
     </aside>
   );
