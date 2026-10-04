@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { AIExecutionMode, RiskLevel } from '@audira/types';
 import { useNetOpsStore } from '../../store/useNetOpsStore';
+import { MarkdownRenderer } from '../ui/MarkdownRenderer';
 
 interface ChatMessage {
   id: string;
@@ -218,9 +219,13 @@ Below is the synthesized configuration. Pre-execution backup snapshot will be ta
               <span>{msg.timestamp}</span>
             </div>
 
-            <div className="whitespace-pre-wrap font-sans text-xs leading-relaxed text-slate-200">
-              {msg.content}
-            </div>
+            {msg.sender === 'assistant' ? (
+              <MarkdownRenderer content={msg.content} />
+            ) : (
+              <div className="whitespace-pre-wrap font-sans text-xs leading-relaxed text-cyan-100">
+                {msg.content}
+              </div>
+            )}
 
             {/* Tool Executions Badge List */}
             {msg.toolCalls && msg.toolCalls.length > 0 && (
