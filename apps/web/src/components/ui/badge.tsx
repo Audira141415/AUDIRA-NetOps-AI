@@ -7,20 +7,20 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function Badge({ className, variant = 'default', ...props }: BadgeProps): React.JSX.Element {
   const variantStyles = {
-    default: 'border-transparent bg-cyan-600 text-white',
-    secondary: 'border-transparent bg-slate-800 text-slate-300',
-    destructive: 'border-transparent bg-rose-600 text-white',
-    outline: 'text-slate-300 border-noc-border',
-    success: 'bg-emerald-950/60 text-emerald-400 border-emerald-800',
-    warning: 'bg-amber-950/60 text-amber-400 border-amber-800',
-    critical: 'bg-rose-950 text-rose-300 border-rose-600 animate-pulse',
-    cyan: 'bg-cyan-950/80 text-cyan-300 border-cyan-800',
+    default: 'border-transparent bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white shadow-[0_0_10px_rgba(168,85,247,0.35)]',
+    secondary: 'bg-[#1E1045] text-purple-200 border-purple-500/30',
+    destructive: 'bg-rose-950/80 text-rose-300 border-rose-500/40 shadow-[0_0_10px_rgba(244,63,94,0.3)]',
+    outline: 'text-purple-200 border-purple-500/30',
+    success: 'bg-emerald-950/80 text-emerald-300 border-emerald-400/40 shadow-[0_0_10px_rgba(52,211,153,0.3)]',
+    warning: 'bg-amber-950/80 text-amber-300 border-amber-400/40 shadow-[0_0_10px_rgba(251,191,36,0.3)]',
+    critical: 'bg-rose-950 text-rose-200 border-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.5)] animate-pulse',
+    cyan: 'bg-teal-950/80 text-teal-300 border-teal-400/40 shadow-[0_0_10px_rgba(45,212,191,0.3)]',
   };
 
   return (
     <div
       className={cn(
-        'inline-flex items-center rounded border px-2 py-0.5 text-[10px] font-mono font-semibold transition-colors',
+        'inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-mono font-semibold transition-colors',
         variantStyles[variant],
         className
       )}

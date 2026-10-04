@@ -1,4 +1,4 @@
-// Sidebar Navigation Component
+// Sidebar Navigation Component - Holographic Luxury NOC Theme
 
 import React from 'react';
 import {
@@ -31,10 +31,10 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'topology', label: 'Topology', icon: Network },
   { id: 'terminal', label: 'Terminal', icon: Terminal, badge: 'PuTTY' },
   { id: 'monitoring', label: 'Monitoring', icon: Activity },
-  { id: 'alerts', label: 'Alerts', icon: AlertTriangle, badge: '2', badgeColor: 'bg-amber-500/20 text-amber-400 border border-amber-500/30' },
+  { id: 'alerts', label: 'Alerts', icon: AlertTriangle, badge: '2', badgeColor: 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-[0_0_8px_rgba(245,158,11,0.3)]' },
   { id: 'configuration', label: 'Configuration', icon: FileCode2 },
   { id: 'backups', label: 'Backups', icon: HardDriveDownload },
-  { id: 'ai-copilot', label: 'AI Copilot', icon: Bot, badge: 'AI', badgeColor: 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' },
+  { id: 'ai-copilot', label: 'AI Copilot', icon: Bot, badge: 'AI', badgeColor: 'bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40 shadow-[0_0_8px_rgba(236,72,153,0.3)]' },
   { id: 'automation', label: 'Automation', icon: Zap },
   { id: 'audit', label: 'Audit Logs', icon: ShieldCheck },
   { id: 'settings', label: 'Settings', icon: Settings },
@@ -44,10 +44,10 @@ export const Sidebar: React.FC = () => {
   const { currentTab, setCurrentTab, setSelectedDevice } = useNetOpsStore();
 
   return (
-    <aside className="w-56 bg-noc-panel border-r border-noc-border flex flex-col justify-between select-none z-20">
+    <aside className="w-56 bg-[#140A2E]/70 backdrop-blur-xl border-r border-purple-500/20 flex flex-col justify-between select-none z-20 shadow-[4px_0_25px_rgba(112,26,117,0.15)]">
       {/* Navigation List */}
       <div className="py-3 px-2 space-y-1">
-        <div className="px-3 pb-2 text-[10px] font-mono font-semibold uppercase tracking-wider text-slate-500">
+        <div className="px-3 pb-2 text-[10px] font-mono font-bold uppercase tracking-wider text-transparent bg-gradient-to-r from-purple-400 to-fuchsia-400 bg-clip-text">
           NOC Operations
         </div>
 
@@ -64,21 +64,21 @@ export const Sidebar: React.FC = () => {
                 }
                 setCurrentTab(item.id);
               }}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition ${
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
                 isActive
-                  ? 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 font-semibold'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-noc-surface/60'
+                  ? 'bg-gradient-to-r from-fuchsia-600/25 via-purple-600/25 to-teal-400/10 text-white border-l-2 border-fuchsia-400 font-bold shadow-[0_0_15px_rgba(236,72,153,0.25)]'
+                  : 'text-purple-300/70 hover:text-white hover:bg-[#1E1045]/60 hover:translate-x-0.5'
               }`}
             >
               <div className="flex items-center space-x-2.5">
-                <Icon className={`w-4 h-4 ${isActive ? 'text-cyan-400' : 'text-slate-400'}`} />
-                <span>{item.label}</span>
+                <Icon className={`w-4 h-4 transition ${isActive ? 'text-fuchsia-400 drop-shadow-[0_0_6px_rgba(236,72,153,0.8)]' : 'text-purple-400/80'}`} />
+                <span className="tracking-wide">{item.label}</span>
               </div>
 
               {item.badge && (
                 <span
-                  className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${
-                    item.badgeColor || 'bg-noc-surface text-slate-400 border border-noc-border'
+                  className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
+                    item.badgeColor || 'bg-[#1E1045] text-purple-300 border border-purple-500/30'
                   }`}
                 >
                   {item.badge}
@@ -89,13 +89,13 @@ export const Sidebar: React.FC = () => {
         })}
       </div>
 
-      {/* Footer System Status */}
-      <div className="p-3 border-t border-noc-border bg-noc-bg/50">
-        <div className="text-[10px] text-slate-500 font-mono mb-1">AUD-NETOPS-NODE-01</div>
+      {/* Footer System Status with Holographic Pulse */}
+      <div className="p-3 border-t border-purple-500/20 bg-[#0E0725]/60">
+        <div className="text-[10px] text-purple-400/70 font-mono mb-1">AUD-NETOPS-NODE-01</div>
         <div className="flex items-center justify-between text-xs font-mono">
-          <span className="text-slate-400">Core Telemetry:</span>
-          <span className="text-emerald-400 flex items-center space-x-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-purple-300/80">Core Telemetry:</span>
+          <span className="text-teal-300 font-bold flex items-center space-x-1.5">
+            <span className="w-2 h-2 rounded-full bg-teal-400 shadow-[0_0_8px_#2dd4bf] animate-pulse" />
             <span>ONLINE</span>
           </span>
         </div>
