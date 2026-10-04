@@ -36,6 +36,7 @@ import {
   Radio,
   FileText,
   BadgeAlert,
+  Menu,
 } from 'lucide-react';
 import { useNetOpsStore } from '../../store/useNetOpsStore';
 
@@ -63,6 +64,9 @@ export const LandingPage: React.FC = () => {
 
   // FAQ Accordion State
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+
+  // Mobile Menu State
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleFaq = (index: number) => {
     setActiveFaq(activeFaq === index ? null : index);
@@ -109,76 +113,79 @@ export const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#060a16] text-slate-100 font-sans selection:bg-cyan-500 selection:text-black">
       {/* Top Banner: Official Notice of Proprietary License */}
-      <div className="bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 border-b border-cyan-500/30 px-4 py-2 text-center text-xs text-cyan-200 flex items-center justify-center space-x-2">
-        <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-        <span className="font-bold text-white tracking-wide">PENGUMUMAN RESMI:</span>
+      <div className="bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 border-b border-cyan-500/30 px-4 py-2 text-center text-xs text-cyan-200 flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+        <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shrink-0" />
+        <span className="font-bold text-white tracking-wide shrink-0">PENGUMUMAN RESMI:</span>
         <span className="text-slate-300">
           AUDIRA NetOps AI v1.0 adalah software <strong className="text-cyan-300">Lisensi Komersial / Proprietary Berbayar</strong> milik <strong className="text-white">AUDIRA (Agus Dwi R)</strong>. Tidak tersedia versi gratis untuk produksi.
         </span>
         <button
           onClick={() => handleOpenOrderModal('enterprise')}
-          className="ml-2 underline text-cyan-400 hover:text-cyan-300 font-semibold cursor-pointer"
+          className="ml-1 underline text-cyan-400 hover:text-cyan-300 font-semibold cursor-pointer shrink-0 whitespace-nowrap"
         >
           Beli Lisensi Resmi &rarr;
         </button>
       </div>
 
-      {/* Public Navbar */}
-      <nav className="sticky top-0 z-50 bg-[#080d1e]/90 backdrop-blur-xl border-b border-cyan-500/20 px-6 py-3.5 shadow-[0_4px_30px_rgba(6,182,212,0.12)]">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+      {/* Public Navbar - Collision-Proof & Responsive */}
+      <nav className="sticky top-0 z-50 bg-[#080d1e]/95 backdrop-blur-2xl border-b border-cyan-500/20 px-4 sm:px-6 py-2.5 sm:py-3 shadow-[0_4px_30px_rgba(6,182,212,0.15)]">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           {/* Logo & Brand */}
-          <div className="flex items-center space-x-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 flex items-center justify-center text-white shadow-[0_0_20px_rgba(56,189,248,0.6)] border border-cyan-300/40">
+          <div
+            className="flex items-center space-x-3 shrink-0 cursor-pointer"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 flex items-center justify-center text-white shadow-[0_0_20px_rgba(56,189,248,0.6)] border border-cyan-300/40 shrink-0">
               <span className="font-extrabold text-base tracking-tighter">A</span>
             </div>
-            <div>
-              <div className="flex items-center space-x-2">
+            <div className="shrink-0">
+              <div className="flex items-center space-x-2 whitespace-nowrap">
                 <span className="font-black text-lg tracking-wider text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]">
                   AUDIRA
                 </span>
                 <span className="font-bold text-lg text-cyan-400">
                   NetOps AI
                 </span>
-                <span className="text-[10px] font-mono font-bold text-cyan-300 px-2 py-0.5 rounded-full bg-cyan-950/80 border border-cyan-500/40">
+                <span className="text-[10px] font-mono font-bold text-cyan-300 px-2 py-0.5 rounded-full bg-cyan-950/80 border border-cyan-500/40 shrink-0 hidden sm:inline-block">
                   PROPRIETARY v1.0
                 </span>
               </div>
-              <div className="text-[10px] text-slate-400 font-sans tracking-tight">
+              <div className="text-[10px] text-slate-400 font-sans tracking-tight whitespace-nowrap hidden sm:block">
                 By AUDIRA (Agus Dwi R) • Commercial Enterprise Edition
               </div>
             </div>
           </div>
 
-          {/* Nav Links */}
-          <div className="hidden lg:flex items-center space-x-7 text-xs font-medium text-slate-300">
-            <a href="#fitur" className="hover:text-cyan-300 transition tracking-wide">
-              Fitur Lengkap
+          {/* Desktop Nav Links (Clean, Concise, No Wrapping) */}
+          <div className="hidden xl:flex items-center gap-6 text-xs font-semibold text-slate-300 whitespace-nowrap">
+            <a href="#fitur" className="hover:text-cyan-300 transition whitespace-nowrap">
+              Fitur
             </a>
-            <a href="#preview" className="hover:text-cyan-300 transition tracking-wide">
+            <a href="#preview" className="hover:text-cyan-300 transition whitespace-nowrap">
               Live Preview
             </a>
-            <a href="#keamanan" className="hover:text-cyan-300 transition tracking-wide">
-              9-Step AI Safety
+            <a href="#keamanan" className="hover:text-cyan-300 transition whitespace-nowrap">
+              AI Safety
             </a>
-            <a href="#arsitektur" className="hover:text-cyan-300 transition tracking-wide">
+            <a href="#arsitektur" className="hover:text-cyan-300 transition whitespace-nowrap">
               Arsitektur
             </a>
-            <a href="#harga" className="text-cyan-300 font-bold hover:text-cyan-200 transition tracking-wide">
-              Harga & Lisensi (Berbayar)
+            <a href="#harga" className="text-cyan-300 font-bold hover:text-cyan-200 transition whitespace-nowrap">
+              Harga & Lisensi
             </a>
-            <a href="#hak-cipta" className="hover:text-cyan-300 transition tracking-wide">
-              Legalitas Hak Cipta
+            <a href="#hak-cipta" className="hover:text-cyan-300 transition whitespace-nowrap">
+              Hak Cipta
             </a>
-            <a href="#faq" className="hover:text-cyan-300 transition tracking-wide">
+            <a href="#faq" className="hover:text-cyan-300 transition whitespace-nowrap">
               FAQ
             </a>
           </div>
 
-          {/* Header Action Buttons */}
-          <div className="flex items-center space-x-3">
+          {/* Header Action Buttons & Mobile Hamburger */}
+          <div className="flex items-center space-x-2 sm:space-x-3 shrink-0 whitespace-nowrap">
             <button
               onClick={() => handleOpenOrderModal('enterprise')}
-              className="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-xs shadow-[0_0_20px_rgba(6,182,212,0.4)] border border-cyan-300/40 transition-all flex items-center space-x-1.5"
+              className="px-3.5 py-2 rounded-lg bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-xs shadow-[0_0_20px_rgba(6,182,212,0.4)] border border-cyan-300/40 transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0"
             >
               <ShoppingCart className="w-3.5 h-3.5" />
               <span>Beli Lisensi</span>
@@ -186,13 +193,77 @@ export const LandingPage: React.FC = () => {
 
             <button
               onClick={() => setCurrentTab('dashboard')}
-              className="px-4 py-2 rounded-lg bg-[#121c38] hover:bg-[#1a2952] border border-cyan-500/40 text-cyan-300 hover:text-white font-bold text-xs shadow-sm transition-all flex items-center space-x-1.5 group"
+              className="px-3.5 py-2 rounded-lg bg-[#121c38] hover:bg-[#1a2952] border border-cyan-500/40 text-cyan-300 hover:text-white font-bold text-xs shadow-sm transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 group"
             >
-              <span>Buka Console NOC</span>
+              <span>Console NOC</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition" />
+            </button>
+
+            {/* Mobile / Tablet Menu Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="xl:hidden p-2 rounded-lg bg-[#121c38] border border-cyan-500/30 text-cyan-300 hover:text-white transition shrink-0"
+              title="Toggle Menu"
+            >
+              {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
           </div>
         </div>
+
+        {/* Mobile / Tablet Dropdown Menu */}
+        {isMobileMenuOpen && (
+          <div className="xl:hidden mt-3 pt-3 border-t border-cyan-500/20 bg-[#091024]/95 backdrop-blur-xl rounded-xl p-3.5 space-y-2 text-xs font-semibold text-slate-300 animate-in fade-in slide-in-from-top-2 duration-150">
+            <a
+              href="#fitur"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block py-2 px-3 rounded-lg hover:bg-slate-800/80 hover:text-cyan-300 transition"
+            >
+              Fitur Lengkap
+            </a>
+            <a
+              href="#preview"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block py-2 px-3 rounded-lg hover:bg-slate-800/80 hover:text-cyan-300 transition"
+            >
+              Live Sandbox Preview
+            </a>
+            <a
+              href="#keamanan"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block py-2 px-3 rounded-lg hover:bg-slate-800/80 hover:text-cyan-300 transition"
+            >
+              9-Step AI Execution Safety
+            </a>
+            <a
+              href="#arsitektur"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block py-2 px-3 rounded-lg hover:bg-slate-800/80 hover:text-cyan-300 transition"
+            >
+              Arsitektur Vendor-Neutral
+            </a>
+            <a
+              href="#harga"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block py-2 px-3 rounded-lg bg-cyan-950/70 text-cyan-300 border border-cyan-500/40 font-bold"
+            >
+              Harga & Paket Lisensi (Berbayar)
+            </a>
+            <a
+              href="#hak-cipta"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block py-2 px-3 rounded-lg hover:bg-slate-800/80 hover:text-cyan-300 transition"
+            >
+              Sertifikat Hak Cipta AUDIRA (Agus Dwi R)
+            </a>
+            <a
+              href="#faq"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block py-2 px-3 rounded-lg hover:bg-slate-800/80 hover:text-cyan-300 transition"
+            >
+              FAQ (Pertanyaan Umum)
+            </a>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}

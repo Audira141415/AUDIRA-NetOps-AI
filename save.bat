@@ -6,13 +6,13 @@ title AUDIRA NetOps AI - Git Save and Push to GitHub
 color 0B
 
 echo.
-echo ==============================================================================
-echo        AUDIRA NETOPS AI: ENTERPRISE NOC PLATFORM - 1-CLICK GIT SAVE AND PUSH
-echo        By AUDIRA (Agus Dwi R) - Proprietary Commercial Software
-echo ==============================================================================
-echo  Target Repo  : https://github.com/Audira141415/AUDIRA-NetOps-AI.git
-echo  Target Branch: main
-echo ==============================================================================
+echo ================================================================
+echo   AUDIRA NETOPS AI: ENTERPRISE NOC PLATFORM - 1-CLICK GIT SAVE
+echo   By AUDIRA (Agus Dwi R) - Proprietary Commercial Software
+echo ================================================================
+echo   Target Repo  : https://github.com/Audira141415/AUDIRA-NetOps-AI.git
+echo   Target Branch: main
+echo ================================================================
 echo.
 
 :: 1. Cek apakah Git terinstal
@@ -90,21 +90,21 @@ goto :push_success
 :push_failed
 color 0E
 echo.
-echo ==============================================================================
-echo  [INFO] Jika GitHub meminta otentikasi akun Audira141415,
-echo  pastikan Personal Access Token ^(PAT^) atau login kredensial Anda aktif.
-echo  Atau jalankan perintah manual: git push -u origin main
-echo ==============================================================================
+echo ================================================================
+echo   [INFO] Jika GitHub meminta otentikasi akun Audira141415,
+echo   pastikan Personal Access Token ^(PAT^) aktif.
+echo   Atau jalankan perintah manual: git push -u origin main
+echo ================================================================
 goto :script_end
 
 :push_success
 color 0A
 echo.
-echo ==============================================================================
-echo  [SUCCESS] SELURUH KODE AUDIRA NETOPS AI SUDAH SINKRON DI GITHUB!
-echo  Repositori: https://github.com/Audira141415/AUDIRA-NetOps-AI
-echo  Branch    : main (Up-to-Date)
-echo ==============================================================================
+echo ================================================================
+echo   [SUCCESS] SELURUH KODE AUDIRA NETOPS AI SINKRON DI GITHUB!
+echo   Repositori: https://github.com/Audira141415/AUDIRA-NetOps-AI
+echo   Branch    : main (Up-to-Date)
+echo ================================================================
 
 :script_end
 
