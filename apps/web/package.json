@@ -1,0 +1,37 @@
+{
+  "name": "@audira/web",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@audira/security": "workspace:*",
+    "@audira/types": "workspace:*",
+    "@audira/ui": "workspace:*",
+    "@tanstack/react-query": "^5.56.2",
+    "@xterm/xterm": "^5.5.0",
+    "@xyflow/react": "^12.3.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.446.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "recharts": "^2.12.7",
+    "tailwind-merge": "^2.5.2",
+    "zustand": "^5.0.0-rc.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.8",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.12",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.6"
+  }
+}
