@@ -38,10 +38,20 @@ import {
   BadgeAlert,
   Menu,
 } from 'lucide-react';
-import { useNetOpsStore } from '../../store/useNetOpsStore';
+import { useNetOpsStore, NavigationTab } from '../../store/useNetOpsStore';
 
 export const LandingPage: React.FC = () => {
-  const { setCurrentTab } = useNetOpsStore();
+  const { setCurrentTab, isAuthenticated, login } = useNetOpsStore();
+
+  // Instant direct access to NOC Console / Terminal with auto-auth fallback
+  const handleEnterConsole = (targetTab: NavigationTab = 'dashboard') => {
+    if (!isAuthenticated) {
+      login('admin', 'Super Admin');
+    }
+    setCurrentTab(targetTab);
+    const targetHash = targetTab === 'dashboard' ? '#/dashboard' : `#/${targetTab}`;
+    window.location.hash = targetHash;
+  };
 
   // Interactive State
   const [activePreviewTab, setActivePreviewTab] = useState<
@@ -105,8 +115,8 @@ export const LandingPage: React.FC = () => {
       `Mohon informasikan invoice resmi, nomor rekening pembayaran, dan prosedur penerbitan Certificate License Key. Terima kasih.`;
 
     const encoded = encodeURIComponent(text);
-    // AUDIRA direct contact
-    window.open(`https://wa.me/6281234567890?text=${encoded}`, '_blank');
+    // AUDIRA direct official contact
+    window.open(`https://wa.me/6281329001415?text=${encoded}`, '_blank');
     setIsOrderSuccess(true);
   };
 
@@ -185,16 +195,27 @@ export const LandingPage: React.FC = () => {
           <div className="flex items-center space-x-2 sm:space-x-3 shrink-0 whitespace-nowrap">
             <button
               onClick={() => handleOpenOrderModal('enterprise')}
-              className="px-3.5 py-2 rounded-lg bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-xs shadow-[0_0_20px_rgba(6,182,212,0.4)] border border-cyan-300/40 transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0"
+              className="px-3 py-2 rounded-lg bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-xs shadow-[0_0_20px_rgba(6,182,212,0.4)] border border-cyan-300/40 transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0"
             >
               <ShoppingCart className="w-3.5 h-3.5" />
               <span>Beli Lisensi</span>
             </button>
 
             <button
-              onClick={() => setCurrentTab('dashboard')}
-              className="px-3.5 py-2 rounded-lg bg-[#121c38] hover:bg-[#1a2952] border border-cyan-500/40 text-cyan-300 hover:text-white font-bold text-xs shadow-sm transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 group"
+              onClick={() => handleEnterConsole('terminal')}
+              className="px-3 py-2 rounded-lg bg-[#0e1733] hover:bg-[#16254f] border border-amber-500/40 text-amber-300 hover:text-white font-bold text-xs shadow-sm transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0"
+              title="Akses Langsung PuTTY & Serial Console"
             >
+              <Terminal className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden md:inline">PuTTY Terminal</span>
+            </button>
+
+            <button
+              onClick={() => handleEnterConsole('dashboard')}
+              className="px-3.5 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-xs shadow-[0_0_18px_rgba(6,182,212,0.4)] border border-cyan-300/40 transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 group"
+              title="Masuk ke Platform Console NOC Cockpit"
+            >
+              <Play className="w-3.5 h-3.5 text-cyan-200" />
               <span>Console NOC</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition" />
             </button>
@@ -213,6 +234,29 @@ export const LandingPage: React.FC = () => {
         {/* Mobile / Tablet Dropdown Menu */}
         {isMobileMenuOpen && (
           <div className="xl:hidden mt-3 pt-3 border-t border-cyan-500/20 bg-[#091024]/95 backdrop-blur-xl rounded-xl p-3.5 space-y-2 text-xs font-semibold text-slate-300 animate-in fade-in slide-in-from-top-2 duration-150">
+            <div className="grid grid-cols-2 gap-2 pb-2 mb-2 border-b border-slate-800">
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  handleEnterConsole('dashboard');
+                }}
+                className="py-2 px-3 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold text-center flex items-center justify-center space-x-1"
+              >
+                <Play className="w-3.5 h-3.5" />
+                <span>Console NOC</span>
+              </button>
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  handleEnterConsole('terminal');
+                }}
+                className="py-2 px-3 rounded-lg bg-amber-950/60 border border-amber-500/40 text-amber-300 font-bold text-center flex items-center justify-center space-x-1"
+              >
+                <Terminal className="w-3.5 h-3.5 text-amber-400" />
+                <span>PuTTY Terminal</span>
+              </button>
+            </div>
+
             <a
               href="#fitur"
               onClick={() => setIsMobileMenuOpen(false)}
@@ -315,21 +359,30 @@ export const LandingPage: React.FC = () => {
             </button>
 
             <button
-              onClick={() => setCurrentTab('dashboard')}
-              className="px-7 py-3.5 rounded-xl bg-[#0f172e] hover:bg-[#162244] border border-cyan-500/40 hover:border-cyan-400 text-cyan-200 font-bold text-sm shadow-[0_0_20px_rgba(6,182,212,0.15)] transition-all flex items-center space-x-2 transform hover:-translate-y-0.5"
+              onClick={() => handleEnterConsole('dashboard')}
+              className="px-7 py-3.5 rounded-xl bg-[#0f172e] hover:bg-[#162244] border border-cyan-500/40 hover:border-cyan-400 text-cyan-200 font-bold text-sm shadow-[0_0_20px_rgba(6,182,212,0.2)] transition-all flex items-center space-x-2 transform hover:-translate-y-0.5"
             >
               <Play className="w-4 h-4 text-cyan-400" />
               <span>Buka Live Console NOC</span>
             </button>
 
+            <button
+              onClick={() => handleEnterConsole('terminal')}
+              className="px-6 py-3.5 rounded-xl bg-amber-950/40 hover:bg-amber-900/60 border border-amber-500/40 text-amber-300 font-bold text-sm shadow-[0_0_20px_rgba(245,158,11,0.2)] transition-all flex items-center space-x-2 transform hover:-translate-y-0.5"
+              title="Akses Langsung PuTTY Clustered Terminal & Deteksi Serial Console"
+            >
+              <Terminal className="w-4 h-4 text-amber-400" />
+              <span>PuTTY &amp; Serial Terminal</span>
+            </button>
+
             <a
-              href="https://wa.me/6281234567890?text=Halo%20AUDIRA%20(Agus%20Dwi%20R),%20saya%20tertarik%20membeli%20Lisensi%20Resmi%20AUDIRA%20NetOps%20AI%20v1.0"
+              href="https://wa.me/6281329001415?text=Halo%20AUDIRA%20(Agus%20Dwi%20R),%20saya%20tertarik%20membeli%20Lisensi%20Resmi%20AUDIRA%20NetOps%20AI%20v1.0"
               target="_blank"
               rel="noreferrer"
               className="px-6 py-3.5 rounded-xl bg-emerald-950/60 hover:bg-emerald-900/80 border border-emerald-500/40 text-emerald-300 font-bold text-sm shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all flex items-center space-x-2"
             >
               <PhoneCall className="w-4 h-4 text-emerald-400" />
-              <span>Konsultasi WhatsApp</span>
+              <span>Konsultasi WhatsApp Resmi</span>
             </a>
           </div>
 
@@ -565,7 +618,7 @@ export const LandingPage: React.FC = () => {
 
                   <div className="p-3 bg-cyan-950/30 border border-cyan-500/20 rounded-xl text-xs flex items-center justify-between text-cyan-200">
                     <span>⚡ Mode WinBox Web AUDIRA: Akses GUI penuh tanpa butuh Wine di macOS atau Linux. Kompatibel MikroTik v6 & v7.</span>
-                    <button onClick={() => setCurrentTab('devices')} className="font-bold text-white underline hover:text-cyan-300">
+                    <button onClick={() => handleEnterConsole('devices')} className="font-bold text-white underline hover:text-cyan-300">
                       Coba di Console &rarr;
                     </button>
                   </div>
@@ -614,7 +667,7 @@ export const LandingPage: React.FC = () => {
 
                   <div className="text-slate-400 text-xs flex items-center justify-between">
                     <span>* Mendukung copy/paste ANSI, keyboard shortcut nano/vim, dan multi-router terminal broadcast.</span>
-                    <button onClick={() => setCurrentTab('terminal')} className="text-cyan-400 font-bold hover:underline">
+                    <button onClick={() => handleEnterConsole('terminal')} className="text-cyan-400 font-bold hover:underline">
                       Jalankan PuTTY Terminal &rarr;
                     </button>
                   </div>
@@ -761,7 +814,7 @@ export const LandingPage: React.FC = () => {
 
                   <div className="p-3 bg-[#081024] rounded-xl border border-cyan-500/20 text-xs text-slate-300 flex items-center justify-between">
                     <span>⚡ Canvas topologi interaktif mendeteksi link failure, BGP status, dan throughput realtime antar perangkat.</span>
-                    <button onClick={() => setCurrentTab('topology')} className="text-cyan-400 font-bold hover:underline">
+                    <button onClick={() => handleEnterConsole('topology')} className="text-cyan-400 font-bold hover:underline">
                       Buka Canvas Topology &rarr;
                     </button>
                   </div>
@@ -1342,7 +1395,7 @@ export const LandingPage: React.FC = () => {
             </button>
 
             <button
-              onClick={() => setCurrentTab('dashboard')}
+              onClick={() => handleEnterConsole('dashboard')}
               className="px-8 py-3.5 rounded-xl bg-[#0e1630] hover:bg-[#152044] border border-cyan-500/40 text-cyan-200 font-bold text-sm transition flex items-center space-x-2"
             >
               <Play className="w-4 h-4 text-cyan-400" />
@@ -1406,12 +1459,12 @@ export const LandingPage: React.FC = () => {
               <li className="flex items-center space-x-2">
                 <PhoneCall className="w-3.5 h-3.5 text-emerald-400" />
                 <a
-                  href="https://wa.me/6281234567890"
+                  href="https://wa.me/6281329001415"
                   target="_blank"
                   rel="noreferrer"
                   className="hover:text-emerald-300 transition"
                 >
-                  WhatsApp: +62 812-3456-7890
+                  WhatsApp: +62 813-2900-1415 (Official)
                 </a>
               </li>
               <li className="flex items-center space-x-2">
@@ -1426,7 +1479,7 @@ export const LandingPage: React.FC = () => {
               </li>
               <li className="pt-2">
                 <button
-                  onClick={() => setCurrentTab('dashboard')}
+                  onClick={() => handleEnterConsole('dashboard')}
                   className="w-full py-1.5 rounded bg-blue-900/40 hover:bg-blue-800/60 border border-blue-500/40 text-cyan-200 text-xs font-bold"
                 >
                   Masuk Console NOC &rarr;

@@ -70,3 +70,45 @@ export interface TopologyEdgeData {
   status: 'UP' | 'DEGRADED' | 'DOWN';
   latencyMs?: number;
 }
+
+// MRTG (Multi Router Traffic Grapher) Types
+export type MrtgTimeRange = 'live' | 'daily' | 'weekly' | 'monthly' | 'yearly';
+
+export interface MrtgDataPoint {
+  timestamp: string;
+  timeLabel: string;
+  rxBps: number;
+  txBps: number;
+  rxMbps: number;
+  txMbps: number;
+  rxFormatted: string;
+  txFormatted: string;
+}
+
+export interface MrtgStats {
+  currentRxBps: number;
+  currentTxBps: number;
+  avgRxBps: number;
+  avgTxBps: number;
+  maxRxBps: number;
+  maxTxBps: number;
+  percentile95RxBps: number;
+  percentile95TxBps: number;
+}
+
+export interface MrtgInterfaceTraffic {
+  deviceId: string;
+  deviceName: string;
+  interfaceName: string;
+  interfaceType: string;
+  macAddress?: string;
+  ipAddress?: string;
+  speed: string;
+  capacityBps: number;
+  status: 'UP' | 'DOWN';
+  range: MrtgTimeRange;
+  stats: MrtgStats;
+  points: MrtgDataPoint[];
+  lastPolled: string;
+}
+

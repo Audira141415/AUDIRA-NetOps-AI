@@ -18,20 +18,23 @@ import {
   Cpu,
   HardDrive,
   Thermometer,
+  Globe,
 } from 'lucide-react';
 import { Device, DeviceTab, useNetOpsStore } from '../../store/useNetOpsStore';
+import { MrtgMonitoringView } from '../monitoring/MrtgMonitoringView';
 
 interface WinboxDetailProps {
   device: Device;
 }
 
 export const WinboxDetail: React.FC<WinboxDetailProps> = ({ device }) => {
-  const { setSelectedDevice, addTerminalTab, setAiDrawerOpen, setCurrentTab } = useNetOpsStore();
+  const { setSelectedDevice, addTerminalTab, setAiDrawerOpen, setCurrentTab, showToast } = useNetOpsStore();
   const [activeTab, setActiveTab] = useState<DeviceTab>('overview');
 
   const TABS: { id: DeviceTab; label: string }[] = [
     { id: 'overview', label: 'Overview' },
     { id: 'interfaces', label: 'Interfaces' },
+    { id: 'mrtg', label: 'Traffic Graphs (MRTG)' },
     { id: 'ip-addresses', label: 'IP Addresses' },
     { id: 'routes', label: 'Routes' },
     { id: 'firewall', label: 'Firewall' },
@@ -49,6 +52,8 @@ export const WinboxDetail: React.FC<WinboxDetailProps> = ({ device }) => {
     { id: 'ai', label: 'AI Copilot' },
   ];
 
+  const deviceUri = `https://${device.hostname}:${device.apiPort || 8729}`;
+
   return (
     <div className="flex flex-col h-[calc(100vh-3.5rem)] bg-noc-bg select-none">
       {/* Header bar with Back button & Device summary */}
@@ -61,10 +66,26 @@ export const WinboxDetail: React.FC<WinboxDetailProps> = ({ device }) => {
             <ArrowLeft className="w-4 h-4" />
           </button>
 
-          <div className="flex items-center space-x-2">
-            <span className="font-semibold text-sm text-white font-mono">{device.name}</span>
-            <span className="text-xs text-cyan-400 font-mono">({device.ipAddress})</span>
-            <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-mono">
+          <div className="flex items-center space-x-2.5">
+            <span className="font-bold text-sm text-white font-mono flex items-center space-x-1.5">
+              <Server className="w-3.5 h-3.5 text-cyan-400" />
+              <span>[{device.name}]</span>
+            </span>
+            <span
+              className="flex items-center space-x-1.5 text-xs text-cyan-300 font-mono bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-500/30 cursor-pointer hover:border-cyan-400 transition"
+              title="Klik untuk salin URI resmi"
+              onClick={() => {
+                navigator.clipboard.writeText(deviceUri);
+                showToast(`URI ${deviceUri} berhasil disalin!`, 'info');
+              }}
+            >
+              <Globe className="w-3 h-3 text-cyan-400" />
+              <span>{deviceUri}</span>
+            </span>
+            <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">
+              (IP: {device.ipAddress})
+            </span>
+            <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-mono font-bold">
               {device.status}
             </span>
           </div>
@@ -215,6 +236,7 @@ export const WinboxDetail: React.FC<WinboxDetailProps> = ({ device }) => {
                   <th className="px-4 py-2">RX Bytes</th>
                   <th className="px-4 py-2">TX Bytes</th>
                   <th className="px-4 py-2">Errors / Drops</th>
+                  <th className="px-4 py-2 text-right">MRTG Graph</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-noc-border">
@@ -227,6 +249,14 @@ export const WinboxDetail: React.FC<WinboxDetailProps> = ({ device }) => {
                   <td className="px-4 py-2.5 text-slate-300">95.8 GB</td>
                   <td className="px-4 py-2.5 text-slate-300">84.9 GB</td>
                   <td className="px-4 py-2.5 text-slate-500">0 / 0</td>
+                  <td className="px-4 py-2.5 text-right">
+                    <button
+                      onClick={() => setActiveTab('mrtg')}
+                      className="px-2 py-0.5 rounded bg-cyan-950 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-900/60 text-[10px] font-mono"
+                    >
+                      View MRTG
+                    </button>
+                  </td>
                 </tr>
                 <tr>
                   <td className="px-4 py-2.5 font-semibold text-white">ether1-wan</td>
@@ -237,6 +267,14 @@ export const WinboxDetail: React.FC<WinboxDetailProps> = ({ device }) => {
                   <td className="px-4 py-2.5 text-slate-300">4.8 GB</td>
                   <td className="px-4 py-2.5 text-slate-300">2.3 GB</td>
                   <td className="px-4 py-2.5 text-slate-500">0 / 0</td>
+                  <td className="px-4 py-2.5 text-right">
+                    <button
+                      onClick={() => setActiveTab('mrtg')}
+                      className="px-2 py-0.5 rounded bg-cyan-950 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-900/60 text-[10px] font-mono"
+                    >
+                      View MRTG
+                    </button>
+                  </td>
                 </tr>
                 <tr>
                   <td className="px-4 py-2.5 font-semibold text-white">ether2-lan</td>
@@ -247,6 +285,14 @@ export const WinboxDetail: React.FC<WinboxDetailProps> = ({ device }) => {
                   <td className="px-4 py-2.5 text-slate-300">12.8 GB</td>
                   <td className="px-4 py-2.5 text-slate-300">19.2 GB</td>
                   <td className="px-4 py-2.5 text-slate-500">0 / 0</td>
+                  <td className="px-4 py-2.5 text-right">
+                    <button
+                      onClick={() => setActiveTab('mrtg')}
+                      className="px-2 py-0.5 rounded bg-cyan-950 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-900/60 text-[10px] font-mono"
+                    >
+                      View MRTG
+                    </button>
+                  </td>
                 </tr>
                 <tr>
                   <td className="px-4 py-2.5 font-semibold text-white">bridge-lan</td>
@@ -257,11 +303,26 @@ export const WinboxDetail: React.FC<WinboxDetailProps> = ({ device }) => {
                   <td className="px-4 py-2.5 text-slate-300">152.8 GB</td>
                   <td className="px-4 py-2.5 text-slate-300">189.2 GB</td>
                   <td className="px-4 py-2.5 text-slate-500">0 / 0</td>
+                  <td className="px-4 py-2.5 text-right">
+                    <button
+                      onClick={() => setActiveTab('mrtg')}
+                      className="px-2 py-0.5 rounded bg-cyan-950 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-900/60 text-[10px] font-mono"
+                    >
+                      View MRTG
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
         )}
+
+        {activeTab === 'mrtg' && (
+          <div className="rounded-xl overflow-hidden">
+            <MrtgMonitoringView device={device} />
+          </div>
+        )}
+
 
         {activeTab === 'ip-addresses' && (
           <div className="bg-noc-panel border border-noc-border rounded-lg overflow-hidden text-xs font-mono">
@@ -336,8 +397,54 @@ export const WinboxDetail: React.FC<WinboxDetailProps> = ({ device }) => {
           </div>
         )}
 
+        {/* Terminal quick-launch tab */}
+        {activeTab === 'terminal' && (
+          <div className="bg-noc-panel border border-noc-border rounded-xl p-8 text-center text-xs font-mono text-slate-400 space-y-3">
+            <div className="w-12 h-12 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+              <TerminalIcon className="w-6 h-6" />
+            </div>
+            <div className="text-white font-bold text-sm">PuTTY CLI Terminal Session</div>
+            <p className="text-slate-400 max-w-md mx-auto">
+              Buka sesi terminal interaktif PuTTY untuk mengeksekusi perintah CLI langsung ke {device.name} ({device.ipAddress}).
+            </p>
+            <button
+              onClick={() => {
+                addTerminalTab(device);
+                setCurrentTab('terminal');
+              }}
+              className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition inline-flex items-center space-x-2 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+            >
+              <TerminalIcon className="w-4 h-4" />
+              <span>Buka Live PuTTY Terminal</span>
+            </button>
+          </div>
+        )}
+
+        {/* AI Copilot quick-launch tab */}
+        {activeTab === 'ai' && (
+          <div className="bg-noc-panel border border-cyan-500/30 rounded-xl p-8 text-center text-xs font-mono text-slate-400 space-y-3">
+            <div className="w-12 h-12 mx-auto rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+              <Bot className="w-6 h-6" />
+            </div>
+            <div className="text-white font-bold text-sm">Autonomous AI Network Copilot</div>
+            <p className="text-slate-400 max-w-md mx-auto">
+              Analisis performa, diagnosa masalah routing, firewall safety audit, dan optimasi otomatis untuk {device.name}.
+            </p>
+            <button
+              onClick={() => {
+                setAiDrawerOpen(true);
+                setCurrentTab('ai-copilot');
+              }}
+              className="px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-semibold transition inline-flex items-center space-x-2 shadow-[0_0_15px_rgba(6,182,212,0.3)]"
+            >
+              <Bot className="w-4 h-4" />
+              <span>Buka AI Copilot Console</span>
+            </button>
+          </div>
+        )}
+
         {/* Other tabs fallback */}
-        {!['overview', 'interfaces', 'ip-addresses', 'routes'].includes(activeTab) && (
+        {!['overview', 'interfaces', 'mrtg', 'ip-addresses', 'routes', 'terminal', 'ai'].includes(activeTab) && (
           <div className="bg-noc-panel border border-noc-border rounded-lg p-6 text-center text-xs font-mono text-slate-400">
             <div className="text-white font-semibold text-sm mb-1 uppercase tracking-wide">
               {activeTab} Management Panel
@@ -345,6 +452,28 @@ export const WinboxDetail: React.FC<WinboxDetailProps> = ({ device }) => {
             <p className="text-slate-500 max-w-md mx-auto">
               Live {activeTab} parameters connected to {device.name} via {device.connectionType}.
             </p>
+            {activeTab === 'configuration' && (
+              <div className="mt-4">
+                <button
+                  onClick={() => setCurrentTab('configuration')}
+                  className="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-sans text-xs transition inline-flex items-center space-x-1.5"
+                >
+                  <FileCode2 className="w-3.5 h-3.5" />
+                  <span>Buka Config Manager</span>
+                </button>
+              </div>
+            )}
+            {activeTab === 'backups' && (
+              <div className="mt-4">
+                <button
+                  onClick={() => setCurrentTab('backups')}
+                  className="px-3 py-1.5 rounded bg-purple-600 hover:bg-purple-500 text-white font-sans text-xs transition inline-flex items-center space-x-1.5"
+                >
+                  <HardDriveDownload className="w-3.5 h-3.5" />
+                  <span>Buka Backup Manager</span>
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

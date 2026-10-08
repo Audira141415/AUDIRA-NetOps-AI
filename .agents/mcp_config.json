@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "routeros-gateway": {
+      "command": "node",
+      "args": ["packages/routeros/dist/mcp-server.js"],
+      "env": {
+        "NODE_ENV": "development",
+        "ROUTEROS_API_PORT": "8728"
+      },
+      "description": "Model Context Protocol gateway for inspecting MikroTik RouterOS devices, interfaces, and routes."
+    },
+    "network-diagnostics": {
+      "command": "node",
+      "args": ["packages/ssh/dist/mcp-diag.js"],
+      "env": {
+        "DIAG_TIMEOUT_MS": "5000"
+      },
+      "description": "Local ICMP ping, traceroute, and MTR diagnostics provider."
+    }
+  }
+}

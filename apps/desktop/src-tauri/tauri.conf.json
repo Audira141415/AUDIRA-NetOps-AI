@@ -2,10 +2,10 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "AUDIRA-NetOps-AI",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "com.audira.netops",
   "build": {
     "frontendDist": "../../apps/web/dist",
-    "devUrl": "http://localhost:5173",
+    "devUrl": "http://localhost:5180",
     "beforeDevCommand": "pnpm --filter @audira/web dev",
     "beforeBuildCommand": "pnpm --filter @audira/web build"
   },

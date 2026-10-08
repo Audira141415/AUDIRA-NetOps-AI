@@ -49,12 +49,12 @@ export const SettingsView: React.FC = () => {
   const [showApiKey, setShowApiKey] = useState(false);
   const [aiConfig, setAiConfig] = useState({
     nineRouterApiKey: 'sk-84766c18f4f56bc9-1xtusv-d557e2bb',
-    nineRouterBaseUrl: 'http://localhost:20128/v1',
+    nineRouterBaseUrl: 'https://ai.audira.net/v1',
     nineRouterModel: 'audira-combo',
     grokApiKey: 'xai-9f8a2c4e1b7d5e6a0c3b8d1f',
     grokModel: 'grok-2-1212',
     grokBaseUrl: 'https://api.x.ai/v1',
-    ollamaBaseUrl: 'http://localhost:11434',
+    ollamaBaseUrl: 'https://ollama.noc.audira.net:11434',
     ollamaModel: 'qwen2.5:7b',
     deepseekApiKey: 'sk-dsk-884192b0c1e8',
     deepseekModel: 'deepseek-chat',
@@ -165,12 +165,12 @@ export const SettingsView: React.FC = () => {
 
   const [discordConfig, setDiscordConfig] = useState({
     enabled: false,
-    webhookUrl: 'https://discord.com/api/webhooks/12999/xxxxxxxx',
+    webhookUrl: 'https://webhook.noc.audira.net/events/discord',
   });
 
   const [slackConfig, setSlackConfig] = useState({
     enabled: false,
-    webhookUrl: 'https://hooks.slack.com/services/T00/B00/xxxx',
+    webhookUrl: 'https://webhook.noc.audira.net/events/slack',
   });
 
   const [isWebhookTesting, setIsWebhookTesting] = useState(false);
@@ -238,21 +238,21 @@ export const SettingsView: React.FC = () => {
           const activeModel = data.model || aiConfig.nineRouterModel;
           setAiTestResult({
             success: true,
-            message: `Koneksi ke 9Router BERHASIL! Model '${activeModel}' aktif merespons: "${reply.slice(0, 50).replace(/\n/g, ' ')}..."`,
+            message: `Koneksi ke AUDIRA AI Gateway BERHASIL! Model '${activeModel}' aktif merespons: "${reply.slice(0, 50).replace(/\n/g, ' ')}..."`,
             latencyMs: latency,
           });
         } else {
           const errText = await res.text();
           setAiTestResult({
             success: false,
-            message: `9Router HTTP ${res.status}: ${errText.slice(0, 80)}`,
+            message: `AUDIRA Gateway HTTP ${res.status}: ${errText.slice(0, 80)}`,
             latencyMs: latency,
           });
         }
       } catch (err: any) {
         setAiTestResult({
           success: false,
-          message: `Gagal menghubungi 9Router di ${aiConfig.nineRouterBaseUrl}: ${err.message}`,
+          message: `Gagal menghubungi AUDIRA AI Gateway di ${aiConfig.nineRouterBaseUrl}: ${err.message}`,
           latencyMs: Date.now() - startMs,
         });
       } finally {
@@ -380,7 +380,7 @@ export const SettingsView: React.FC = () => {
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 font-mono">
                 {[
-                  { id: '9router', name: '9Router (Local/Cloud)', badge: '60+ Models • Active Port 20128', icon: Network },
+                  { id: '9router', name: 'AUDIRA AI Gateway', badge: 'HA Cluster • Port 20128', icon: Network },
                   { id: 'grok', name: 'xAI Grok', badge: 'High Reasoning', icon: Zap },
                   { id: 'ollama', name: 'Ollama (Local)', badge: 'Air-Gapped', icon: Server },
                   { id: 'deepseek', name: 'DeepSeek API', badge: 'R1 / V3', icon: Cpu },
@@ -418,45 +418,56 @@ export const SettingsView: React.FC = () => {
                   <div className="flex items-center justify-between border-b border-cyan-500/20 pb-2">
                     <span className="font-bold text-white flex items-center space-x-2">
                       <Network className="w-4 h-4 text-cyan-400" />
-                      <span>Konfigurasi 9Router (Smart Multi-Provider AI Gateway)</span>
+                      <span>Konfigurasi AUDIRA AI Gateway (Smart Multi-Provider Enterprise AI)</span>
                     </span>
                     <span className="px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/40 text-[10px] font-mono font-bold flex items-center space-x-1.5 shadow">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      <span>9ROUTER DAEMON ACTIVE (PORT 20128)</span>
+                      <span>AUDIRA GATEWAY ACTIVE (PORT 20128)</span>
                     </span>
                   </div>
 
-                  {/* Mode Selector: Local Daemon vs Cloud API */}
+                  {/* Mode Selector: Cloud API vs On-Prem vs Local Daemon */}
                   <div className="flex flex-wrap items-center gap-3 text-xs">
                     <span className="text-slate-400 font-semibold">Endpoint Route:</span>
                     <button
                       type="button"
-                      onClick={() => setAiConfig({ ...aiConfig, nineRouterBaseUrl: 'http://localhost:20128/v1' })}
+                      onClick={() => setAiConfig({ ...aiConfig, nineRouterBaseUrl: 'https://ai.audira.net/v1' })}
                       className={`px-3 py-1.5 rounded-lg font-mono text-xs transition ${
-                        aiConfig.nineRouterBaseUrl.includes('localhost')
+                        aiConfig.nineRouterBaseUrl.includes('ai.audira.net')
                           ? 'bg-blue-600 text-white font-bold border border-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.4)]'
                           : 'bg-[#0f172e] text-slate-400 border border-slate-700'
                       }`}
                     >
-                      ● Local Daemon (http://localhost:20128/v1)
+                      ☁ AUDIRA Cloud Gateway (https://ai.audira.net/v1)
                     </button>
                     <button
                       type="button"
-                      onClick={() => setAiConfig({ ...aiConfig, nineRouterBaseUrl: 'https://api.9router.com/v1' })}
+                      onClick={() => setAiConfig({ ...aiConfig, nineRouterBaseUrl: 'https://gateway.noc.audira.net/v1' })}
                       className={`px-3 py-1.5 rounded-lg font-mono text-xs transition ${
-                        aiConfig.nineRouterBaseUrl.includes('api.9router.com')
+                        aiConfig.nineRouterBaseUrl.includes('gateway.noc.audira.net')
                           ? 'bg-blue-600 text-white font-bold border border-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.4)]'
                           : 'bg-[#0f172e] text-slate-400 border border-slate-700'
                       }`}
                     >
-                      ☁ Cloud API (https://api.9router.com/v1)
+                      🏢 On-Prem NOC Gateway (https://gateway.noc.audira.net/v1)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAiConfig({ ...aiConfig, nineRouterBaseUrl: 'http://127.0.0.1:20128/v1' })}
+                      className={`px-3 py-1.5 rounded-lg font-mono text-xs transition ${
+                        aiConfig.nineRouterBaseUrl.includes('127.0.0.1') || aiConfig.nineRouterBaseUrl.includes('localhost')
+                          ? 'bg-blue-600 text-white font-bold border border-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.4)]'
+                          : 'bg-[#0f172e] text-slate-400 border border-slate-700'
+                      }`}
+                    >
+                      ● Local Edge Daemon (http://127.0.0.1:20128/v1)
                     </button>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-slate-300 font-semibold mb-1">
-                        9Router API Key (Aktif Terhubung)
+                        AUDIRA Gateway API Key (Aktif Terhubung)
                       </label>
                       <div className="relative">
                         <input
@@ -473,12 +484,12 @@ export const SettingsView: React.FC = () => {
                           {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
                       </div>
-                      <span className="text-[10px] text-slate-500">API Key aktif terisi: sk-84766c18f4f56bc9-1xtusv-d557e2bb</span>
+                      <span className="text-[10px] text-slate-500">API Key aktif: sk-84766c18f4f56bc9-1xtusv-d557e2bb</span>
                     </div>
 
                     <div>
                       <label className="block text-slate-300 font-semibold mb-1">
-                        Pilihan Model Aktif di 9Router
+                        Pilihan Model Aktif di AUDIRA Gateway
                       </label>
                       <select
                         value={aiConfig.nineRouterModel}
@@ -490,9 +501,9 @@ export const SettingsView: React.FC = () => {
                         <option value="ag/claude-opus-4-6-thinking">ag/claude-opus-4-6-thinking (Claude Opus Deep Thinking)</option>
                         <option value="ag/gemini-3.8-flash-high">ag/gemini-3.8-flash-high (Gemini 3.8 Flash High Context)</option>
                         <option value="ag/gpt-oss-120b-medium">ag/gpt-oss-120b-medium (Open-Source 120B Model)</option>
-                        <option value="9router/auto">9router/auto (Smart 3-Tier Auto Fallback: Subscription -&gt; Cheap -&gt; Free)</option>
+                        <option value="audira/auto">audira/auto (Smart 3-Tier Auto Fallback: Subscription -&gt; Cheap -&gt; Free)</option>
                       </select>
-                      <span className="text-[10px] text-slate-500">60+ model dapat dipanggil secara otomatis melalui 9Router</span>
+                      <span className="text-[10px] text-slate-500">60+ model AI enterprise dapat dipanggil secara otomatis melalui AUDIRA Gateway</span>
                     </div>
                   </div>
 
@@ -1172,6 +1183,16 @@ export const SettingsView: React.FC = () => {
                   placeholder="https://discord.com/api/webhooks/..."
                   className="w-full px-3 py-2 rounded-lg bg-[#0e1730] border border-slate-700 text-white font-mono text-xs"
                 />
+                <div className="flex justify-end pt-1">
+                  <button
+                    type="button"
+                    onClick={() => handleTestWebhook('Discord (#noc-approvals)')}
+                    disabled={isWebhookTesting}
+                    className="px-3 py-1 rounded-lg bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-500/40 text-indigo-200 text-[11px] font-semibold"
+                  >
+                    {isWebhookTesting ? 'Mengirim...' : 'Test Discord Webhook & Action Buttons'}
+                  </button>
+                </div>
               </div>
 
               <div className="p-4 rounded-xl bg-[#091024] border border-teal-500/25 space-y-2">
@@ -1183,6 +1204,16 @@ export const SettingsView: React.FC = () => {
                   placeholder="https://hooks.slack.com/services/..."
                   className="w-full px-3 py-2 rounded-lg bg-[#0e1730] border border-slate-700 text-white font-mono text-xs"
                 />
+                <div className="flex justify-end pt-1">
+                  <button
+                    type="button"
+                    onClick={() => handleTestWebhook('Slack (#alerts)')}
+                    disabled={isWebhookTesting}
+                    className="px-3 py-1 rounded-lg bg-teal-950/80 hover:bg-teal-900 border border-teal-500/40 text-teal-200 text-[11px] font-semibold"
+                  >
+                    {isWebhookTesting ? 'Mengirim...' : 'Test Slack Alert'}
+                  </button>
+                </div>
               </div>
             </div>
 

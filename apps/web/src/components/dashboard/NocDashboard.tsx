@@ -12,6 +12,7 @@ import {
   TrendingUp,
   Cpu,
   ChevronDown,
+  ChevronRight,
   CheckCircle2,
   XCircle,
   Clock,
@@ -43,6 +44,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { Device, DeviceType, ConnectionType, VendorType } from '@audira/types';
+import { MrtgService, formatBitsPerSecond } from '@audira/monitoring';
 import { useNetOpsStore } from '../../store/useNetOpsStore';
 
 export const NocDashboard: React.FC = () => {
@@ -522,38 +524,102 @@ export const NocDashboard: React.FC = () => {
               </div>
             </div>
 
-            {/* CARD 3: Network Traffic Chart */}
-            <div className="glass-cyber-card rounded-2xl p-3.5 shadow-md flex flex-col justify-between border border-cyan-500/20">
-              <div className="flex items-center justify-between pb-2 mb-1 border-b border-cyan-500/20">
-                <div className="flex items-center space-x-2">
-                  <Activity className="w-4 h-4 text-cyan-400" />
-                  <span className="text-xs font-bold text-white tracking-wide">Network Traffic</span>
+            {/* CARD 3: Network Traffic Chart (MRTG Live Preview) */}
+            {(() => {
+              if (devices.length === 0) {
+                return (
+                  <div className="glass-cyber-card rounded-2xl p-3.5 shadow-md flex flex-col justify-between border border-cyan-500/20">
+                    <div className="flex items-center justify-between pb-2 mb-1 border-b border-cyan-500/20">
+                      <div className="flex items-center space-x-2">
+                        <Activity className="w-4 h-4 text-cyan-400" />
+                        <span className="text-xs font-bold text-white tracking-wide">Network Traffic (MRTG)</span>
+                      </div>
+                      <button
+                        onClick={() => setCurrentTab('devices')}
+                        className="text-[10px] text-cyan-300 hover:text-white font-mono flex items-center space-x-1 bg-[#111c38] px-2 py-0.5 rounded border border-cyan-500/30 hover:bg-cyan-500/20 transition"
+                      >
+                        <span>+ Tambah Node</span>
+                      </button>
+                    </div>
+
+                    <div className="h-28 flex flex-col items-center justify-center text-center p-3 text-slate-500 space-y-1">
+                      <Activity className="w-6 h-6 text-slate-600 mb-1" />
+                      <p className="text-[11px] font-sans text-slate-400">Belum ada perangkat terhubung.</p>
+                      <p className="text-[9px] font-mono text-slate-600">Grafik traffic akan aktif saat router riil ditambahkan.</p>
+                    </div>
+                  </div>
+                );
+              }
+
+              const targetDev = devices[0]!;
+              const liveTraffic = MrtgService.getInstance().getInterfaceTraffic(
+                targetDev.id,
+                targetDev.name,
+                'sfp-sfpplus1',
+                'daily'
+              );
+              const currentRx = formatBitsPerSecond(liveTraffic.stats.currentRxBps);
+              const currentTx = formatBitsPerSecond(liveTraffic.stats.currentTxBps);
+
+              return (
+                <div className="glass-cyber-card rounded-2xl p-3.5 shadow-md flex flex-col justify-between border border-cyan-500/20">
+                  <div className="flex items-center justify-between pb-2 mb-1 border-b border-cyan-500/20">
+                    <div className="flex items-center space-x-2">
+                      <Activity className="w-4 h-4 text-cyan-400" />
+                      <span className="text-xs font-bold text-white tracking-wide">Network Traffic (MRTG)</span>
+                    </div>
+                    <button
+                      onClick={() => setCurrentTab('monitoring')}
+                      className="text-[10px] text-cyan-300 hover:text-white font-mono flex items-center space-x-1 bg-[#111c38] px-2 py-0.5 rounded border border-cyan-500/30 hover:bg-cyan-500/20 transition"
+                    >
+                      <span>Open MRTG View</span>
+                      <ChevronRight className="w-3 h-3 text-cyan-400" />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between font-mono text-[10px] my-1">
+                    <span className="flex items-center space-x-1 text-emerald-300 font-semibold">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399]" />
+                      <span>In (Rx): {currentRx}</span>
+                    </span>
+                    <span className="flex items-center space-x-1 text-cyan-300 font-semibold">
+                      <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_6px_#38bdf8]" />
+                      <span>Out (Tx): {currentTx}</span>
+                    </span>
+                  </div>
+
+                  <div className="h-28 w-full mt-1 bg-[#080e1c] rounded-xl border border-cyan-500/10 overflow-hidden pt-1">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={liveTraffic.points.slice(-14)} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="dashMrtgIn" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.6} />
+                            <stop offset="95%" stopColor="#10b981" stopOpacity={0.05} />
+                          </linearGradient>
+                        </defs>
+                        <Area
+                          type="monotone"
+                          dataKey="rxMbps"
+                          stroke="#10b981"
+                          strokeWidth={1.5}
+                          fill="url(#dashMrtgIn)"
+                          isAnimationActive={false}
+                        />
+                        <Area
+                          type="monotone"
+                          dataKey="txMbps"
+                          stroke="#06b6d4"
+                          strokeWidth={1.5}
+                          fill="transparent"
+                          isAnimationActive={false}
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
                 </div>
-                <button className="text-[10px] text-slate-300 font-mono flex items-center space-x-1 bg-[#111c38] px-2 py-0.5 rounded border border-cyan-500/20">
-                  <span>Live Stream</span>
-                  <ChevronDown className="w-3 h-3 text-cyan-400" />
-                </button>
-              </div>
+              );
+            })()}
 
-              <div className="flex items-center space-x-4 font-mono text-[10px] my-1">
-                <span className="flex items-center space-x-1 text-cyan-300 font-semibold">
-                  <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_6px_#38bdf8]" />
-                  <span>Download (0 Mbps)</span>
-                </span>
-                <span className="flex items-center space-x-1 text-emerald-300 font-semibold">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399]" />
-                  <span>Upload (0 Mbps)</span>
-                </span>
-              </div>
-
-              <div className="h-28 w-full mt-1 flex items-center justify-center bg-[#080e1c] rounded-xl border border-cyan-500/10 text-slate-500 text-[11px] font-mono">
-                {totalDevices === 0 ? (
-                  <span>Menunggu koneksi router...</span>
-                ) : (
-                  <span className="text-cyan-400 animate-pulse">Menghubungkan telemetry stream...</span>
-                )}
-              </div>
-            </div>
           </div>
         </div>
 

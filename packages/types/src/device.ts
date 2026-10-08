@@ -13,7 +13,7 @@ export type VendorType =
   | 'GenericSSH'
   | 'Linux';
 export type DeviceType = 'ROUTER' | 'SWITCH' | 'ACCESS_POINT' | 'FIREWALL' | 'SERVER';
-export type ConnectionType = 'ROUTEROS_API' | 'ROUTEROS_REST' | 'SSH';
+export type ConnectionType = 'ROUTEROS_API' | 'ROUTEROS_REST' | 'SSH' | 'SERIAL' | 'TELNET';
 export type DeviceStatus = 'ONLINE' | 'WARNING' | 'OFFLINE' | 'UNREACHABLE';
 
 export interface Device {

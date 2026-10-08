@@ -14,6 +14,10 @@ import {
   ArrowRight,
   Server,
   Zap,
+  Radio,
+  Binary,
+  ShieldAlert,
+  Usb,
 } from 'lucide-react';
 import { useNetOpsStore } from '../../store/useNetOpsStore';
 
@@ -40,9 +44,16 @@ export const CommandPalette: React.FC = () => {
   const COMMANDS: CommandItem[] = [
     {
       id: 'open-terminal',
-      title: 'Open Terminal',
+      title: 'Open Terminal (PuTTY SSH)',
       category: 'Terminal',
       icon: Terminal,
+      action: () => setCurrentTab('terminal'),
+    },
+    {
+      id: 'open-serial-console',
+      title: 'Physical Serial Console (COM / Web Serial API Detector)',
+      category: 'Terminal',
+      icon: Usb,
       action: () => setCurrentTab('terminal'),
     },
     {
@@ -81,10 +92,31 @@ export const CommandPalette: React.FC = () => {
     },
     {
       id: 'monitor-interface',
-      title: 'Monitor Interface',
+      title: 'Monitor Interface (MRTG Graphs)',
       category: 'Monitoring',
       icon: Activity,
       action: () => setCurrentTab('monitoring'),
+    },
+    {
+      id: 'packet-sniffer',
+      title: 'Live Packet Sniffer & Torch Analyzer',
+      category: 'Network',
+      icon: Radio,
+      action: () => setCurrentTab('packet-sniffer'),
+    },
+    {
+      id: 'visual-ipam',
+      title: 'Visual IPAM & Subnet Tree Planner',
+      category: 'Network',
+      icon: Binary,
+      action: () => setCurrentTab('ipam'),
+    },
+    {
+      id: 'security-compliance',
+      title: 'Security Compliance & CVE Scanner',
+      category: 'Security',
+      icon: ShieldAlert,
+      action: () => setCurrentTab('compliance'),
     },
     {
       id: 'backup-device',

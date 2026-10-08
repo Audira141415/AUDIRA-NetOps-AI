@@ -55,7 +55,7 @@ if (Get-Command "docker" -ErrorAction SilentlyContinue) {
 # 4. Display service dashboard URLs
 Write-Host ""
 Write-Host "[AUDIRA NETOPS AI STACK]" -ForegroundColor Green
-Write-Host "  * Frontend NOC Interface : http://localhost:5173" -ForegroundColor Cyan
+Write-Host "  * Frontend NOC Interface : http://localhost:5180" -ForegroundColor Cyan
 Write-Host "  * Backend API Gateway    : http://localhost:3000" -ForegroundColor Cyan
 Write-Host "  * Live Terminal (WS)     : ws://localhost:3000/ws" -ForegroundColor Cyan
 Write-Host "  * Worker Polling Daemon  : http://localhost:3001" -ForegroundColor Cyan
@@ -64,8 +64,9 @@ Write-Host ""
 # Launch browser after 4 seconds
 Start-Job -ScriptBlock {
     Start-Sleep -Seconds 4
-    Start-Process "http://localhost:5173"
+    Start-Process "http://localhost:5180"
 } | Out-Null
+
 
 # 5. Launch all workspace services with Turborepo
 pnpm dev

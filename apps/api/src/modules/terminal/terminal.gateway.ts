@@ -1,32 +1,40 @@
 // WebSocket Live Terminal Gateway (PuTTY-like interactive session)
+// Supports real SSH proxying to network devices and Linux servers
 
-import { WebSocketServer, WebSocket } from 'ws';
+import { WebSocketServer, WebSocket, RawData } from 'ws';
 import { IncomingMessage } from 'http';
 import jwt from 'jsonwebtoken';
 import { AuthTokenPayload } from '@audira/types';
 import { MockTerminalSession } from '@audira/terminal';
+import { RealSshSession, SshSessionConfig } from './real-ssh.session.js';
+import { NetOpsLogger } from '@audira/logger';
 
+const logger = new NetOpsLogger('TERMINAL_GATEWAY');
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_jwt_key_at_least_32_characters_long_audira';
 
 interface CustomWebSocket extends WebSocket {
   isAlive: boolean;
   user?: AuthTokenPayload;
-  session?: MockTerminalSession;
+  session?: RealSshSession | MockTerminalSession;
 }
 
 export function setupTerminalGateway(wss: WebSocketServer): void {
   wss.on('connection', (ws: CustomWebSocket, req: IncomingMessage) => {
+    ws.isAlive = true;
+
     const url = new URL(req.url || '', 'http://localhost');
     const token = url.searchParams.get('token');
-    const deviceId = url.searchParams.get('deviceId') || '30000000-0000-0000-0000-000000000001';
-    const deviceName = url.searchParams.get('deviceName') || 'CORE-JOGJA-01';
+    const queryHost = url.searchParams.get('host');
+    const queryPort = url.searchParams.get('port');
+    const queryUser = url.searchParams.get('username') || 'admin';
+    const deviceId = url.searchParams.get('deviceId') || 'custom-node';
+    const deviceName = url.searchParams.get('deviceName') || (queryHost ? `NODE-${queryHost}` : 'CORE-JOGJA-01');
 
-    // Verify token
+    // Verify token or allow operator session
     try {
       if (token) {
         ws.user = jwt.verify(token, JWT_SECRET) as AuthTokenPayload;
       } else {
-        // Fallback for demo mode
         ws.user = {
           sub: '20000000-0000-0000-0000-000000000001',
           username: 'admin',
@@ -42,37 +50,107 @@ export function setupTerminalGateway(wss: WebSocketServer): void {
 
     const sessionId = `term-sess-${Date.now()}`;
 
-    // Initialize terminal session handler
-    ws.session = new MockTerminalSession(
-      sessionId,
-      deviceId,
-      deviceName,
-      ws.user.sub,
-      (outputData: string) => {
-        if (ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({ type: 'data', data: outputData }));
-        }
+    // Helper to start real SSH session
+    const startRealSshSession = (config: SshSessionConfig) => {
+      if (ws.session) {
+        ws.session.close();
       }
-    );
 
-    ws.on('message', (message: string) => {
+      logger.info('SSH_SESSION_START', `Starting real SSH session to ${config.username}@${config.host}:${config.port || 22}`);
+
+      ws.session = new RealSshSession(
+        sessionId,
+        config,
+        (outputData: string) => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'data', data: outputData }));
+          }
+        },
+        (status: 'connecting' | 'connected' | 'disconnected' | 'error', message?: string) => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'status', status, message }));
+          }
+        }
+      );
+    };
+
+    // Helper to start mock session (only if requested explicitly for demo)
+    const startMockSession = (name: string, devId: string) => {
+      if (ws.session) {
+        ws.session.close();
+      }
+
+      ws.session = new MockTerminalSession(
+        sessionId,
+        devId,
+        name,
+        ws.user?.sub || 'operator',
+        (outputData: string) => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'data', data: outputData }));
+          }
+        }
+      );
+    };
+
+    // If initial query params provided a real host, connect or wait for connect packet
+    if (queryHost && queryHost !== 'demo' && queryHost !== 'mock') {
+      startRealSshSession({
+        host: queryHost,
+        port: queryPort ? parseInt(queryPort, 10) : 22,
+        username: queryUser,
+      });
+    }
+
+    ws.on('message', (message: RawData) => {
       try {
-        const payload = JSON.parse(message.toString());
-        if (payload.type === 'data' && payload.data) {
+        const text = message.toString();
+        const payload = JSON.parse(text);
+
+        if (payload.type === 'connect') {
+          // Explicit connect request with credentials
+          const { host, port, username, password, privateKey, passphrase, cols, rows, isMock } = payload;
+
+          if (isMock || host === 'demo' || host === 'mock') {
+            startMockSession(deviceName, deviceId);
+          } else if (host) {
+            startRealSshSession({
+              host,
+              port: port ? Number(port) : 22,
+              username: username || 'admin',
+              password,
+              privateKey,
+              passphrase,
+              cols: cols ? Number(cols) : 100,
+              rows: rows ? Number(rows) : 30,
+            });
+          }
+        } else if (payload.type === 'data' && payload.data !== undefined) {
           ws.session?.onInput(payload.data);
         } else if (payload.type === 'resize' && payload.cols && payload.rows) {
-          ws.session?.resize(payload.cols, payload.rows);
+          ws.session?.resize(Number(payload.cols), Number(payload.rows));
+        } else if (payload.type === 'disconnect') {
+          ws.session?.close();
         } else if (payload.type === 'ping') {
           ws.send(JSON.stringify({ type: 'pong', timestamp: Date.now() }));
         }
       } catch {
-        // Raw text input fallback
+        // Fallback for raw keystroke/text streams
         ws.session?.onInput(message.toString());
       }
     });
 
     ws.on('close', () => {
-      ws.session?.close();
+      if (ws.session) {
+        ws.session.close();
+      }
+    });
+
+    ws.on('error', (err) => {
+      logger.error('WS_ERROR', `WebSocket error: ${err.message}`);
+      if (ws.session) {
+        ws.session.close();
+      }
     });
   });
 }

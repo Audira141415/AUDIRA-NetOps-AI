@@ -16,6 +16,8 @@ export interface PipelineExecutionRequest {
   deviceName: string;
   proposedCommands: string[];
   reason: string;
+  breakGlassTicket?: string;
+  bypassFreeze?: boolean;
 }
 
 export interface PipelineExecutionStep {
@@ -52,12 +54,20 @@ export class AISafetyPipeline {
       timestamp: new Date().toISOString(),
     });
 
-    // 2. Syntax & Safety Validation
-    const validation = validateCommandSafety(commandText);
+    // 2. Syntax & Safety Validation (including Change-Freeze Governance)
+    const validation = validateCommandSafety(commandText, {
+      breakGlassTicket: request.breakGlassTicket,
+      bypassFreeze: request.bypassFreeze,
+    });
+    const validationDetail =
+      validation.blockReasons.length > 0
+        ? validation.blockReasons.join(' | ')
+        : validation.warnings.join(' | ') || 'Command passed syntactic validation';
+
     steps.push({
       step: 'VALIDATION',
       status: validation.isValid ? 'PASSED' : 'BLOCKED',
-      details: validation.warnings.join(' | ') || 'Command passed syntactic validation',
+      details: validationDetail,
       timestamp: new Date().toISOString(),
     });
 

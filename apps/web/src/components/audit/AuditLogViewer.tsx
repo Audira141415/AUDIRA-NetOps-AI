@@ -13,68 +13,7 @@ import {
 } from 'lucide-react';
 import { AuditLogEntry, RiskLevel } from '@audira/types';
 
-const INITIAL_AUDIT_LOGS: AuditLogEntry[] = [
-  {
-    id: 'aud-001',
-    userId: '20000000-0000-0000-0000-000000000001',
-    username: 'admin',
-    deviceId: '30000000-0000-0000-0000-000000000001',
-    deviceName: 'CORE-JOGJA-01',
-    action: 'CONFIG_APPLY',
-    command: '/ip address add address=10.100.0.1/24 interface=bridge-lan',
-    riskLevel: 'HIGH',
-    approvalStatus: 'APPROVED_BY_ADMIN',
-    approvedBy: 'admin',
-    result: 'SUCCESS',
-    executionDurationMs: 145,
-    clientIp: '192.168.10.50',
-    createdAt: '2026-10-04T13:25:00Z',
-  },
-  {
-    id: 'aud-002',
-    userId: '20000000-0000-0000-0000-000000000001',
-    username: 'admin',
-    deviceId: '30000000-0000-0000-0000-000000000005',
-    deviceName: 'SW-JOGJA-02',
-    action: 'COMMAND_EXECUTION',
-    command: '/system reboot',
-    riskLevel: 'CRITICAL',
-    approvalStatus: 'BLOCKED',
-    result: 'BLOCKED',
-    errorDetails: 'Execution of CRITICAL command blocked by Security Engine without dual sign-off',
-    executionDurationMs: 12,
-    clientIp: '192.168.10.50',
-    createdAt: '2026-10-04T12:40:00Z',
-  },
-  {
-    id: 'aud-003',
-    userId: '20000000-0000-0000-0000-000000000002',
-    username: 'noc_engineer',
-    deviceId: '30000000-0000-0000-0000-000000000001',
-    deviceName: 'CORE-JOGJA-01',
-    action: 'BACKUP_CREATE',
-    command: '/system backup save name=daily-snapshot',
-    riskLevel: 'LOW',
-    result: 'SUCCESS',
-    executionDurationMs: 410,
-    clientIp: '192.168.10.52',
-    createdAt: '2026-10-04T11:00:00Z',
-  },
-  {
-    id: 'aud-004',
-    userId: '20000000-0000-0000-0000-000000000001',
-    username: 'admin',
-    deviceId: '30000000-0000-0000-0000-000000000003',
-    deviceName: 'EDGE-JOGJA-01',
-    action: 'AI_DIAGNOSE',
-    command: 'get_active_connections',
-    riskLevel: 'LOW',
-    result: 'SUCCESS',
-    executionDurationMs: 220,
-    clientIp: '192.168.10.50',
-    createdAt: '2026-10-04T09:00:00Z',
-  },
-];
+const INITIAL_AUDIT_LOGS: AuditLogEntry[] = [];
 
 export const AuditLogViewer: React.FC = () => {
   const [logs, setLogs] = useState<AuditLogEntry[]>(INITIAL_AUDIT_LOGS);
@@ -194,22 +133,36 @@ export const AuditLogViewer: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-noc-border">
-              {filtered.map(log => (
-                <tr key={log.id} className="hover:bg-noc-surface/50 transition">
-                  <td className="px-4 py-3 text-slate-400 whitespace-nowrap">
-                    {new Date(log.createdAt).toLocaleTimeString()}
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="px-6 py-14 text-center text-slate-500 font-sans">
+                    <div className="w-12 h-12 rounded-2xl bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mx-auto mb-3 shadow-[0_0_20px_rgba(6,182,212,0.2)]">
+                      <ShieldCheck className="w-6 h-6" />
+                    </div>
+                    <p className="text-sm font-semibold text-slate-300">Belum Ada Catatan Audit Log</p>
+                    <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto font-sans">
+                      Semua data riwayat audit log telah dibersihkan. Setiap aktivitas operator, eksekusi perintah, dan perubahan konfigurasi pada perangkat fisik akan dicatat secara otomatis.
+                    </p>
                   </td>
-                  <td className="px-4 py-3 text-white font-semibold">{log.username}</td>
-                  <td className="px-4 py-3 text-cyan-300">{log.deviceName}</td>
-                  <td className="px-4 py-3 text-slate-300">{log.action}</td>
-                  <td className="px-4 py-3 text-slate-400 max-w-xs truncate" title={log.command}>
-                    {log.command || '-'}
-                  </td>
-                  <td className="px-4 py-3">{getRiskBadge(log.riskLevel)}</td>
-                  <td className="px-4 py-3">{getResultBadge(log.result)}</td>
-                  <td className="px-4 py-3 text-slate-400">{log.executionDurationMs}ms</td>
                 </tr>
-              ))}
+              ) : (
+                filtered.map(log => (
+                  <tr key={log.id} className="hover:bg-noc-surface/50 transition">
+                    <td className="px-4 py-3 text-slate-400 whitespace-nowrap">
+                      {new Date(log.createdAt).toLocaleTimeString()}
+                    </td>
+                    <td className="px-4 py-3 text-white font-semibold">{log.username}</td>
+                    <td className="px-4 py-3 text-cyan-300">{log.deviceName}</td>
+                    <td className="px-4 py-3 text-slate-300">{log.action}</td>
+                    <td className="px-4 py-3 text-slate-400 max-w-xs truncate" title={log.command}>
+                      {log.command || '-'}
+                    </td>
+                    <td className="px-4 py-3">{getRiskBadge(log.riskLevel)}</td>
+                    <td className="px-4 py-3">{getResultBadge(log.result)}</td>
+                    <td className="px-4 py-3 text-slate-400">{log.executionDurationMs}ms</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

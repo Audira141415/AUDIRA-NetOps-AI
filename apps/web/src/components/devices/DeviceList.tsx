@@ -1,5 +1,3 @@
-// Devices Management Component (List, Filtering, Actions)
-
 import React, { useState } from 'react';
 import {
   Server,
@@ -17,6 +15,11 @@ import {
   Trash2,
   Network,
   X,
+  Pencil,
+  Eye,
+  RotateCcw,
+  Download,
+  Globe,
 } from 'lucide-react';
 import { Device, DeviceStatus, DeviceType, ConnectionType, VendorType } from '@audira/types';
 import { useNetOpsStore } from '../../store/useNetOpsStore';
@@ -25,17 +28,30 @@ export const DeviceList: React.FC = () => {
   const {
     devices,
     addDevice,
+    updateDevice,
     removeDevice,
+    resetDevicesToDefaults,
     setSelectedDevice,
     addTerminalTab,
     setAiDrawerOpen,
     setCurrentTab,
     isAddDeviceModalOpen,
     setAddDeviceModalOpen,
+    showToast,
   } = useNetOpsStore();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [vendorFilter, setVendorFilter] = useState('ALL');
+
+  // Edit Device State
+  const [editingDevice, setEditingDevice] = useState<Device | null>(null);
+  const [editFormData, setEditFormData] = useState<Partial<Device>>({});
+
+  // Delete Confirmation State
+  const [deletingDevice, setDeletingDevice] = useState<Device | null>(null);
+
+  // View Device Quick Modal State
+  const [viewingDevice, setViewingDevice] = useState<Device | null>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -68,8 +84,26 @@ export const DeviceList: React.FC = () => {
       hostname: `${formData.name.toLowerCase()}.local`,
       ipAddress: formData.ipAddress,
       vendor: formData.vendor,
-      platform: `${formData.vendor} Appliance`,
-      osVersion: formData.vendor === 'MikroTik' ? 'RouterOS v7' : 'Firmware v1.0',
+      platform:
+        formData.vendor === 'MikroTik'
+          ? 'Cloud Core Router CCR2004'
+          : formData.vendor === 'Cisco'
+          ? 'Catalyst 9300 Series'
+          : formData.vendor === 'Huawei'
+          ? 'CloudEngine 6800 Series'
+          : formData.vendor === 'Juniper'
+          ? 'Juniper MX204 Universal Router'
+          : `${formData.vendor} Appliance`,
+      osVersion:
+        formData.vendor === 'MikroTik'
+          ? 'RouterOS v7.14'
+          : formData.vendor === 'Cisco'
+          ? 'IOS-XE 17.9.4a'
+          : formData.vendor === 'Huawei'
+          ? 'VRP V800R012'
+          : formData.vendor === 'Juniper'
+          ? 'Junos 22.4R2-S2'
+          : 'Firmware v1.0',
       deviceType: formData.deviceType,
       connectionType: formData.connectionType,
       apiPort: parseInt(formData.port) || 443,
@@ -122,9 +156,63 @@ export const DeviceList: React.FC = () => {
     }
   };
 
+  const handleOpenEdit = (dev: Device) => {
+    setEditingDevice(dev);
+    setEditFormData({
+      name: dev.name,
+      ipAddress: dev.ipAddress,
+      hostname: dev.hostname,
+      vendor: dev.vendor,
+      platform: dev.platform,
+      deviceType: dev.deviceType,
+      connectionType: dev.connectionType,
+      apiPort: dev.apiPort,
+      sshPort: dev.sshPort,
+      status: dev.status,
+    });
+  };
+
+  const handleSaveEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingDevice) return;
+    updateDevice(editingDevice.id, editFormData);
+    setEditingDevice(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deletingDevice) return;
+    removeDevice(deletingDevice.id);
+    setDeletingDevice(null);
+  };
+
+  const handleExportCSV = () => {
+    const headers = ['ID', 'Name', 'IP Address', 'Hostname', 'Vendor', 'Platform', 'Device Type', 'Status', 'API Port', 'SSH Port'];
+    const rows = devices.map((d) => [
+      d.id,
+      `"${d.name}"`,
+      d.ipAddress,
+      `"${d.hostname}"`,
+      d.vendor,
+      `"${d.platform || ''}"`,
+      d.deviceType,
+      d.status,
+      d.apiPort,
+      d.sshPort,
+    ]);
+    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `audira_device_inventory_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="p-4 space-y-4">
-      {/* Top Controls: Search, Filter, Add Device */}
+      {/* Top Controls: Search, Filter, Add Device, Export, Reset */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center space-x-2 flex-1 max-w-md">
           <div className="relative w-full">
@@ -158,13 +246,35 @@ export const DeviceList: React.FC = () => {
           </select>
         </div>
 
-        <button
-          onClick={() => setAddDeviceModalOpen(true)}
-          className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-[0_0_15px_rgba(37,99,235,0.4)] transition"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Device</span>
-        </button>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#111c38] hover:bg-[#1a2952] border border-cyan-500/30 text-cyan-300 font-mono text-xs transition"
+            title="Download Device Inventory as CSV"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Export CSV</span>
+          </button>
+
+          {devices.length > 0 && (
+            <button
+              onClick={resetDevicesToDefaults}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 border border-rose-500/30 text-rose-300 font-mono text-xs transition"
+              title="Hapus semua perangkat yang terdaftar (Clean Slate)"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-rose-400" />
+              <span className="hidden sm:inline">Kosongkan Data</span>
+            </button>
+          )}
+
+          <button
+            onClick={() => setAddDeviceModalOpen(true)}
+            className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-[0_0_15px_rgba(37,99,235,0.4)] transition"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Device</span>
+          </button>
+        </div>
       </div>
 
       {/* Devices List Table */}
@@ -208,17 +318,61 @@ export const DeviceList: React.FC = () => {
                 {filteredDevices.map((dev) => (
                   <tr key={dev.id} className="hover:bg-white/5 transition">
                     <td className="p-3 font-semibold text-white">
-                      <button
-                        onClick={() => setSelectedDevice(dev)}
-                        className="hover:text-cyan-300 flex items-center space-x-1.5 transition text-left"
+                      <a
+                        href={`#/devices/${encodeURIComponent(dev.name.toLowerCase())}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setSelectedDevice(dev);
+                        }}
+                        className="hover:text-cyan-300 flex items-center space-x-1.5 transition text-left cursor-pointer"
                       >
                         <Server className="w-3.5 h-3.5 text-cyan-400" />
-                        <span>{dev.name}</span>
-                      </button>
+                        <span className="font-bold">{dev.name}</span>
+                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-cyan-300 border border-slate-700">
+                          [{dev.vendor.toUpperCase()}]
+                        </span>
+                      </a>
                     </td>
-                    <td className="p-3 text-slate-300">
-                      <div>{dev.ipAddress}</div>
-                      <div className="text-[10px] text-slate-500">{dev.hostname}</div>
+                    <td className="p-3 text-slate-300 font-mono">
+                      <div className="flex items-center space-x-1.5 font-bold text-white">
+                        <Globe className="w-3 h-3 text-cyan-400 shrink-0" />
+                        <a
+                          href={`#/devices/${encodeURIComponent(dev.name.toLowerCase())}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setSelectedDevice(dev);
+                          }}
+                          className="text-cyan-300 hover:underline hover:text-cyan-200"
+                        >
+                          {dev.hostname}
+                        </a>
+                      </div>
+                      <div className="flex items-center space-x-2 text-[10px] text-slate-400 mt-0.5">
+                        <span className="text-slate-300 font-semibold">{dev.ipAddress}</span>
+                        <span>•</span>
+                        {(() => {
+                          const endpointUri =
+                            dev.vendor === 'MikroTik'
+                              ? `api://${dev.hostname}:${dev.apiPort || 8729}`
+                              : dev.vendor === 'Cisco'
+                              ? `restconf://${dev.hostname}:443`
+                              : dev.vendor === 'Huawei'
+                              ? `ssh://${dev.hostname}:${dev.sshPort || 22}`
+                              : `https://${dev.hostname}:${dev.apiPort || 443}`;
+                          return (
+                            <span
+                              className="text-cyan-400 bg-cyan-950/60 px-1.5 py-0.2 rounded border border-cyan-500/20 cursor-pointer hover:border-cyan-400 flex items-center space-x-1"
+                              title="Klik untuk salin URI resmi"
+                              onClick={() => {
+                                navigator.clipboard.writeText(endpointUri);
+                                showToast(`URI ${endpointUri} berhasil disalin!`, 'info');
+                              }}
+                            >
+                              <span>{endpointUri}</span>
+                            </span>
+                          );
+                        })()}
+                      </div>
                     </td>
                     <td className="p-3 text-slate-300">
                       <div>{dev.vendor}</div>
@@ -228,6 +382,20 @@ export const DeviceList: React.FC = () => {
                     <td className="p-3 text-slate-400 text-[11px]">{dev.lastSeen}</td>
                     <td className="p-3 text-right">
                       <div className="flex items-center justify-end space-x-1.5">
+                        <button
+                          onClick={() => setViewingDevice(dev)}
+                          className="p-1.5 rounded-lg bg-[#111c38] hover:bg-[#1b2a52] border border-cyan-500/20 text-slate-300 hover:text-cyan-300 transition"
+                          title="Quick View Details"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleOpenEdit(dev)}
+                          className="p-1.5 rounded-lg bg-[#111c38] hover:bg-[#1b2a52] border border-amber-500/30 text-amber-300 hover:text-white transition"
+                          title="Edit Device Properties"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
                         <button
                           onClick={() => addTerminalTab(dev)}
                           className="p-1.5 rounded-lg bg-[#111c38] hover:bg-[#1b2a52] border border-cyan-500/20 text-slate-300 hover:text-white transition"
@@ -243,9 +411,9 @@ export const DeviceList: React.FC = () => {
                           <ExternalLink className="w-3.5 h-3.5 text-cyan-400" />
                         </button>
                         <button
-                          onClick={() => removeDevice(dev.id)}
+                          onClick={() => setDeletingDevice(dev)}
                           className="p-1.5 rounded-lg bg-[#111c38] hover:bg-rose-950/80 border border-rose-500/30 text-rose-400 hover:text-rose-200 transition"
-                          title="Remove Device"
+                          title="Delete Device"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -395,6 +563,259 @@ export const DeviceList: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Device Modal */}
+      {editingDevice && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-lg bg-[#0c1427] border border-amber-500/40 rounded-2xl shadow-[0_0_50px_rgba(245,158,11,0.25)] p-6 relative">
+            <button
+              onClick={() => setEditingDevice(null)}
+              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+                <Pencil className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white">Edit Device Properties</h3>
+                <p className="text-xs text-slate-400">Perbarui parameter koneksi &amp; metadata {editingDevice.name}</p>
+              </div>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="space-y-3.5 text-xs font-sans">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">Device Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.name || ''}
+                    onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-[#111c38] border border-cyan-500/30 text-white font-mono text-xs focus:outline-none focus:border-cyan-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">IP Address</label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.ipAddress || ''}
+                    onChange={(e) => setEditFormData({ ...editFormData, ipAddress: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-[#111c38] border border-cyan-500/30 text-white font-mono text-xs focus:outline-none focus:border-cyan-400"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">Hostname / FQDN</label>
+                  <input
+                    type="text"
+                    value={editFormData.hostname || ''}
+                    onChange={(e) => setEditFormData({ ...editFormData, hostname: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-[#111c38] border border-cyan-500/30 text-white font-mono text-xs focus:outline-none focus:border-cyan-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">Hardware / Platform</label>
+                  <input
+                    type="text"
+                    value={editFormData.platform || ''}
+                    onChange={(e) => setEditFormData({ ...editFormData, platform: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-[#111c38] border border-cyan-500/30 text-white font-mono text-xs focus:outline-none focus:border-cyan-400"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">Vendor</label>
+                  <select
+                    value={editFormData.vendor}
+                    onChange={(e) => setEditFormData({ ...editFormData, vendor: e.target.value as VendorType })}
+                    className="w-full px-3 py-2 rounded-xl bg-[#111c38] border border-cyan-500/30 text-white text-xs font-mono"
+                  >
+                    <option value="MikroTik">MikroTik</option>
+                    <option value="Cisco">Cisco</option>
+                    <option value="Huawei">Huawei</option>
+                    <option value="Juniper">Juniper</option>
+                    <option value="Fortinet">Fortinet</option>
+                    <option value="EdgeCore">EdgeCore</option>
+                    <option value="GenericSSH">Generic SSH</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">API Port</label>
+                  <input
+                    type="number"
+                    value={editFormData.apiPort || 443}
+                    onChange={(e) => setEditFormData({ ...editFormData, apiPort: parseInt(e.target.value) || 443 })}
+                    className="w-full px-3 py-2 rounded-xl bg-[#111c38] border border-cyan-500/30 text-white font-mono text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">SSH Port</label>
+                  <input
+                    type="number"
+                    value={editFormData.sshPort || 22}
+                    onChange={(e) => setEditFormData({ ...editFormData, sshPort: parseInt(e.target.value) || 22 })}
+                    className="w-full px-3 py-2 rounded-xl bg-[#111c38] border border-cyan-500/30 text-white font-mono text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-cyan-500/20 flex items-center justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingDevice(null)}
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold transition shadow-[0_0_15px_rgba(245,158,11,0.5)] flex items-center space-x-2"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Simpan Perubahan</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deletingDevice && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-md bg-[#0c1427] border border-rose-500/40 rounded-2xl shadow-[0_0_50px_rgba(244,63,94,0.3)] p-6 relative">
+            <button
+              onClick={() => setDeletingDevice(null)}
+              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.3)]">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white">Hapus Perangkat Jaringan?</h3>
+                <p className="text-xs text-rose-400">Tindakan ini memerlukan konfirmasi keamanan</p>
+              </div>
+            </div>
+
+            <div className="bg-[#111c38] p-3 rounded-xl border border-rose-500/20 text-xs font-mono text-slate-300 space-y-1 my-3">
+              <div>Perangkat: <span className="font-bold text-white">{deletingDevice.name}</span></div>
+              <div>IP Target: <span className="text-cyan-400">{deletingDevice.ipAddress}</span></div>
+              <div>Vendor: <span className="text-slate-200">{deletingDevice.vendor}</span> ({deletingDevice.platform})</div>
+            </div>
+
+            <p className="text-xs text-slate-400 mb-4">
+              Semua telemetri, histori sesi PuTTY, dan pemantauan aktif untuk node ini akan dilepaskan dari NOC.
+            </p>
+
+            <div className="flex items-center justify-end space-x-2">
+              <button
+                onClick={() => setDeletingDevice(null)}
+                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition"
+              >
+                Batalkan
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold transition shadow-[0_0_15px_rgba(244,63,94,0.5)] flex items-center space-x-1.5"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Hapus Sekarang</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Quick View Modal */}
+      {viewingDevice && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-lg bg-[#0c1427] border border-cyan-500/40 rounded-2xl shadow-[0_0_50px_rgba(6,182,212,0.3)] p-6 relative">
+            <button
+              onClick={() => setViewingDevice(null)}
+              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+                <Server className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white">{viewingDevice.name}</h3>
+                <p className="text-xs text-cyan-400 font-mono">{viewingDevice.ipAddress} • {viewingDevice.vendor}</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 text-xs font-mono bg-[#111c38] p-4 rounded-xl border border-cyan-500/20 mb-4">
+              <div>
+                <span className="text-slate-500 block text-[10px]">HOSTNAME</span>
+                <span className="text-slate-200">{viewingDevice.hostname}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[10px]">MAC ADDRESS</span>
+                <span className="text-cyan-300">{viewingDevice.macAddress || '48:8F:5A:21:A4:B0'}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[10px]">PLATFORM / HARDWARE</span>
+                <span className="text-slate-200">{viewingDevice.platform || 'CCR2004 Appliance'}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[10px]">OS VERSION</span>
+                <span className="text-emerald-400">{viewingDevice.osVersion || 'RouterOS v7'}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[10px]">CONNECTION PROTOCOL</span>
+                <span className="text-slate-200">{viewingDevice.connectionType} (API: {viewingDevice.apiPort}, SSH: {viewingDevice.sshPort})</span>
+              </div>
+              <div>
+                <span className="text-slate-500 block text-[10px]">STATUS OPERASIONAL</span>
+                <span className="text-emerald-400 font-bold">{viewingDevice.status}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-2 border-t border-cyan-500/20">
+              <span className="text-[11px] font-mono text-slate-400">Terakhir dipolling: {viewingDevice.lastSeen}</span>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => {
+                    const dev = viewingDevice;
+                    setViewingDevice(null);
+                    addTerminalTab(dev);
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-emerald-700/80 hover:bg-emerald-600 text-white text-xs font-mono flex items-center space-x-1.5 transition"
+                >
+                  <Terminal className="w-3.5 h-3.5" />
+                  <span>Launch PuTTY</span>
+                </button>
+                <button
+                  onClick={() => {
+                    const dev = viewingDevice;
+                    setViewingDevice(null);
+                    setSelectedDevice(dev);
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-mono flex items-center space-x-1.5 transition"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>WinBox Suite</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -36,7 +36,7 @@
 ```bash
 pnpm install          # Install all monorepo workspace dependencies
 pnpm dev              # Launch all applications concurrently with Turbo
-pnpm dev:web          # Launch only the web frontend on port 5173
+pnpm dev:web          # Launch only the web frontend on port 5180
 pnpm dev:api          # Launch only the API and WebSocket server on port 3000
 pnpm build            # Production compilation
 pnpm typecheck        # Strict TypeScript typechecking across all packages
@@ -83,3 +83,44 @@ audira-netops-ai/
    - AI Proposal -> Tool Registry -> Validation -> Risk Analysis -> Pre-flight Backup -> Visual Diff (Green/Red/Yellow) -> Operator Approval Gate -> Execution -> Verification & Audit.
 4. **CRITICAL operations** (`system reset`, `reboot`, mass firewall deletion) MUST NEVER execute automatically and require explicit confirmation.
 5. **No Hallucinations**: Every factual assertion about router state must originate from a tool result.
+
+---
+
+## 6. Agent Skills & Rules Ecosystem (`.agents/`)
+
+- **Skills**:
+  - `skills/routeros-v7-syntax/`: RouterOS v7 syntax validation, routing-filter rules, and REST API mapping.
+  - `skills/cisco-ios-syntax/`: Cisco IOS & IOS-XE CLI structure, interface rules, and routing verification.
+  - `skills/huawei-vrp-syntax/`: Huawei VRP CloudEngine & S-series switch syntax and safety directives.
+  - `skills/noc-incident-triage/`: SOP for high CPU, link loss, and BGP flap root-cause analysis.
+  - `skills/bgp-peering-troubleshooter/`: SOP for BGP FSM state triage, RPKI ROA validation, route leak prevention, and multi-vendor soft refresh.
+  - `skills/firewall-safety-audit/`: Security compliance, open port verification, and hardening.
+  - `skills/packet-threat-inspector/`: Torch / Packet Sniffer inspection, DDoS mitigation, and traffic anomaly detection.
+  - `skills/optical-transceiver-dom-inspector/`: Real-time DDM/DOM optical power (RX/TX dBm), fiber attenuation, laser bias current, and SFP degradation diagnostics.
+  - `skills/bandwidth-qos-queue-tuner/`: Bandwidth traffic shaping, MikroTik PCQ/Queue Tree, Bufferbloat mitigation (CAKE/FQ-CoDel), and Cisco LLQ.
+  - `skills/juniper-junos-syntax/`: Standardized syntax guidelines, CLI hierarchy, candidate-commit workflow, and safety rules for Juniper Junos OS devices.
+  - `skills/mpls-vpls-segment-routing-troubleshooter/`: SOP for MPLS LDP, VPLS pseudowire triage, MTU blackhole mitigation, and Segment Routing (SR-MPLS) path diagnostics.
+  - `skills/ipam-subnet-capacity-optimizer/`: SOP for hierarchical VLSM subnet planning, CIDR overlap detection, DHCP exhaustion triage, and IPv6 /64 prefix allocation.
+  - `skills/compliance-security-benchmark-audit/`: SOP for CIS Network Device Benchmark audit, SSH hardening, SNMPv3 USM migration, and 1-click remediation.
+  - `skills/alert-storm-correlation-rca/`: SOP for AIOps alert storm deduplication, topology-aware event correlation, and root-cause analysis (RCA).
+  - `skills/golden-config-drift-detector/`: SOP for Golden Template GitOps comparison, shadow change audit, and automated config reconciliation.
+  - `skills/synthetic-sla-twamp-monitor/`: SOP for active synthetic telemetry, TWAMP / Cisco IP SLA probing, Jitter tracking, and VoIP MOS score evaluation.
+- **Rules**:
+  - `rules/router-safety-guardrails.md`: Absolute blacklist, risk classification matrix, dual-operator approval.
+  - `rules/secret-redaction-policy.md`: Zero credential leakage and regex log-masking specifications.
+  - `rules/change-freeze-window-policy.md`: Peak freeze windows (08:00–22:00 WIB read-only), maintenance windows (01:00–05:00 WIB), and Emergency Break-Glass protocols.
+  - `rules/dual-operator-four-eyes-rule.md`: Segregation of duties, two-person rule enforcement for CRITICAL operations, cryptographic HMAC approval.
+- **MCP Servers**: Configured in `.agents/mcp_config.json` for RouterOS and local diagnostics.
+
+---
+
+## 7. Extended NOC Feature Modules
+
+1. **Visual Drag-and-Drop Automation Workflow Builder**: Trigger-condition-action graph canvas with live simulation.
+2. **Live Packet Sniffer & Torch Analyzer**: Real-time packet telemetry with instant AI threat analysis & mitigation.
+3. **Visual IPAM & Subnet Tree Planner**: Subnet tree visualization, conflict detection, and DHCP pool monitoring.
+4. **Vulnerability & Compliance Security Scanner**: Automated posture audit, CVE identification, and 1-click remediation.
+5. **Multi-Vendor Driver Connectors**: Native `CiscoIOSConnector`, `HuaweiVRPConnector`, and `JuniperJunosConnector` in `@audira/ssh`.
+6. **Telegram & Discord Bot Human-in-the-Loop Gate**: `BotApprovalService` with interactive inline keyboard and rich embed approval sign-off.
+
+

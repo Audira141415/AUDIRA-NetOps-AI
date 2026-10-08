@@ -290,7 +290,7 @@ Atau jalankan perintah pnpm:
 pnpm dev
 ```
 
-* **NOC Web Console**: Buka [http://localhost:5173](http://localhost:5173) di browser Anda.
+* **NOC Web Console**: Buka [http://localhost:5180](http://localhost:5180) di browser Anda.
 * **REST API Gateway**: [http://localhost:3000/api/v1](http://localhost:3000/api/v1)
 * **WebSocket Live Gateway**: `ws://localhost:3000/ws`
 

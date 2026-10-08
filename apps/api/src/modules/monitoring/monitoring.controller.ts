@@ -1,11 +1,12 @@
-// Network Monitoring & Telemetry Controller
-
 import { Router, Request, Response } from 'express';
-import { TelemetrySimulator } from '@audira/monitoring';
+import { TelemetrySimulator, MrtgService } from '@audira/monitoring';
+import { MrtgTimeRange } from '@audira/types';
 import { authenticateJwt, requirePermission } from '../../middleware/auth.middleware.js';
 
 export const monitoringRouter = Router();
 const telemetrySimulator = TelemetrySimulator.getInstance();
+const mrtgService = MrtgService.getInstance();
+
 
 /**
  * GET /api/v1/monitoring/health - Global NOC health overview
@@ -161,3 +162,45 @@ monitoringRouter.get('/topology', authenticateJwt, requirePermission('device.rea
     message: 'Network topology graph fetched',
   });
 });
+
+/**
+ * GET /api/v1/monitoring/mrtg/:deviceId/interfaces - List all interfaces with MRTG quick metrics
+ */
+monitoringRouter.get('/mrtg/:deviceId/interfaces', authenticateJwt, requirePermission('device.read'), (req: Request, res: Response) => {
+  const { deviceId } = req.params;
+  const { deviceName } = req.query;
+  const summaries = mrtgService.getDeviceMrtgSummary(
+    deviceId || '30000000-0000-0000-0000-000000000001',
+    (deviceName as string) || 'CORE-JOGJA-01'
+  );
+  res.json({
+    success: true,
+    data: summaries,
+    message: 'MRTG interface summaries retrieved',
+  });
+});
+
+/**
+ * GET /api/v1/monitoring/mrtg/:deviceId/:interfaceName - Get full MRTG time-series dataset for an interface
+ */
+monitoringRouter.get('/mrtg/:deviceId/:interfaceName', authenticateJwt, requirePermission('device.read'), (req: Request, res: Response) => {
+  const { deviceId, interfaceName } = req.params;
+  const { deviceName, range } = req.query;
+  const validRange: MrtgTimeRange = ['live', 'daily', 'weekly', 'monthly', 'yearly'].includes(range as string)
+    ? (range as MrtgTimeRange)
+    : 'daily';
+
+  const trafficData = mrtgService.getInterfaceTraffic(
+    deviceId || '30000000-0000-0000-0000-000000000001',
+    (deviceName as string) || 'CORE-JOGJA-01',
+    interfaceName || 'sfp-sfpplus1',
+    validRange
+  );
+
+  res.json({
+    success: true,
+    data: trafficData,
+    message: `MRTG traffic graph data for ${interfaceName} (${validRange}) retrieved`,
+  });
+});
+
