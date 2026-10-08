@@ -1,72 +1,17 @@
-LISENSI KOMERSIAL / PROPRIETARY (BERBAYAR)
-COMMERCIAL / PROPRIETARY SOFTWARE LICENSE AGREEMENT
+LISENSI PROPRIETARY KOMERSIAL
 
-Hak Cipta (c) 2025-2026 AUDIRA (Agus Dwi R).
-Seluruh Hak Cipta Dilindungi Undang-Undang (All Rights Reserved).
+Copyright (c) 2026 PT Audira Sukses Mandiri. Seluruh hak cipta dilindungi undang-undang.
 
-PENTING — BACA DENGAN SEKSAMA SEBELUM MENGGUNAKAN ATAU MENGAKSES PERANGKAT LUNAK INI:
-Perjanjian Lisensi Perangkat Lunak ini ("Perjanjian") adalah perjanjian hukum yang sah antara 
-Anda (baik perorangan maupun badan hukum) dengan AUDIRA (Agus Dwi R) ("Pemilik Hak Cipta") 
-untuk penggunaan produk perangkat lunak AUDIRA NetOps AI, termasuk kode sumber, pustaka, 
-antarmuka pengguna, aset grafis, dokumentasi, dan materi terkait ("Perangkat Lunak").
+Perangkat lunak "AUDIRA-NetOps-AI" ("Perangkat Lunak") adalah milik eksklusif
+PT Audira Sukses Mandiri ("Pemilik").
 
-================================================================================
-1. KEPEMILIKAN & HAK KEKAYAAN INTELEKTUAL (INTELLECTUAL PROPERTY)
-================================================================================
-Perangkat Lunak ini dilisensikan, BUKAN DIJUAL. Seluruh hak cipta, hak paten, rahasia dagang, 
-merek dagang, arsitektur kode sumber, algoritma AI Safety Pipeline, konektor jaringan, 
-dan hak kekayaan intelektual lainnya yang melekat pada Perangkat Lunak ini adalah milik 
-eksklusif dari AUDIRA (Agus Dwi R).
+DILARANG menggunakan, menyalin, memodifikasi, menggabungkan, mempublikasikan,
+mendistribusikan, mensublisensikan, dan/atau menjual Perangkat Lunak ini,
+baik sebagian maupun seluruhnya, dalam bentuk kode sumber maupun hasil kompilasi,
+tanpa lisensi komersial tertulis dari Pemilik.
 
-================================================================================
-2. PEMBERIAN LISENSI KOMERSIAL (GRANT OF LICENSE)
-================================================================================
-Dengan memperoleh Lisensi Komersial Berbayar yang sah dari Pemilik Hak Cipta, 
-Anda diberikan hak non-eksklusif, tidak dapat dipindahtangankan, dan terbatas untuk:
-a. Memasang dan menjalankan Perangkat Lunak pada infrastruktur internal (on-premise 
-   maupun private cloud) sesuai dengan jumlah lisensi/seat/node jaringan yang telah disepakati.
-b. Menggunakan platform ini untuk operasional Network Operations Center (NOC), pemantauan, 
-   otomasi, dan manajemen perangkat jaringan internal organisasi Anda.
+Untuk memperoleh lisensi komersial, hubungi Pemilik.
+Setiap pelanggaran akan ditindak sesuai hukum yang berlaku.
 
-================================================================================
-3. BATASAN & LARANGAN PENGGUNAAN (RESTRICTIONS)
-================================================================================
-Kecuali atas izin tertulis resmi dari AUDIRA (Agus Dwi R), Anda DILARANG KERAS untuk:
-a. Menyalin, mendistribusikan ulang, menyewakan, meminjamkan, mensublisensikan, atau 
-   mempublikasikan kode sumber Perangkat Lunak kepada pihak ketiga manapun.
-b. Melakukan reverse-engineering, dekompilasi, pembongkaran, atau mencoba mengekstrak 
-   kode sumber rahasia maupun logika safety pipeline proprietary AUDIRA.
-c. Menggunakan Perangkat Lunak ini untuk membangun layanan komersial tandingan 
-   (Software-as-a-Service / SaaS publik) yang bersaing langsung dengan AUDIRA NetOps AI.
-d. Menghapus, mengubah, atau mengaburkan pemberitahuan hak cipta, merek dagang, 
-   atau identitas kepemilikan AUDIRA (Agus Dwi R) yang ada di dalam aplikasi maupun dokumentasi.
-
-================================================================================
-4. SISTEM PEMBAYARAN & LISENSI ENTERPRISE
-================================================================================
-Perangkat Lunak ini beroperasi di bawah skema Lisensi Komersial / Berbayar (Proprietary). 
-Penggunaan dalam lingkungan produksi skala enterprise, ISP, instansi pemerintah, 
-atau korporasi memerlukan kontrak lisensi aktif (Subscription atau Perpetual License) 
-yang diterbitkan langsung oleh Pemilik Hak Cipta.
-
-================================================================================
-5. BATASAN TANGGUNG JAWAB (LIMITATION OF LIABILITY)
-================================================================================
-PERANGKAT LUNAK INI DISEDIAKAN "SEBAGAIMANA ADANYA" (AS-IS). DALAM KEADAAN APAPUN, 
-PEMILIK HAK CIPTA (AUDIRA / AGUS DWI R) TIDAK BERTANGGUNG JAWAB ATAS SEGALA BENTUK 
-KERUGIAN LANGSUNG MAUPUN TIDAK LANGSUNG, GANGGUAN JARINGAN, KERUSAKAN PERANGKAT KERAS, 
-KEHILANGAN DATA, DOWNTIME SERVER, ATAU KESALAHAN EKSEKUSI JARINGAN YANG DIAKIBATKAN OLEH 
-PENGGUNAAN ATAU KETIDAKMAMPUAN MENGGUNAKAN PERANGKAT LUNAK INI. OPERATOR TETAP MEMEGANG 
-KENDALI DAN TANGGUNG JAWAB PENUH ATAS SETIAP PERSETUJUAN PERUBAHAN JARINGAN (APPROVAL GATE).
-
-================================================================================
-6. KONTAK RESMI & DUKUNGAN LISENSI
-================================================================================
-Untuk pembelian lisensi komersial, kemitraan enterprise, perizinan white-label, 
-atau dukungan teknis resmi, silakan hubungi:
-
-Pemilik Hak Cipta : AUDIRA (Agus Dwi R)
-GitHub Profil     : https://github.com/Audira141415
-Repositori Resmi  : https://github.com/Audira141415/AUDIRA-NetOps-AI.git
-Produk            : AUDIRA NetOps AI v1.0 Enterprise
-Status Lisensi    : Lisensi Komersial / Proprietary (Berbayar)
+PERANGKAT LUNAK INI DISEDIAKAN "SEBAGAIMANA ADANYA", TANPA JAMINAN APAPUN,
+BAIK TERSURAT MAUPUN TERSIRAT.
