@@ -3,7 +3,7 @@
 # 🌐 AUDIRA NetOps AI v1.0
 ### *"Network Management. Terminal. Automation. AI."*
 
-**Platform Operasi Jaringan Enterprise Generasi Baru dengan Live Terminal PuTTY, Manajemen WinBox, Observabilitas Telemetri Hologram, dan Autonomous AI Network Copilot.**
+**Platform Operasi Jaringan Modern dengan Live Terminal PuTTY-Style, Manajemen Node WinBox-Style, Observabilitas Telemetri Real-Time, dan AI Network Copilot dengan Guardrail Keamanan.**
 
 [![License: Proprietary Commercial](https://img.shields.io/badge/License-Proprietary%20Commercial%20(Berbayar)-blue.svg?style=for-the-badge&logo=shield)](LICENSE)
 [![Author: AUDIRA](https://img.shields.io/badge/Creator-AUDIRA%20(Agus%20Dwi%20R)-06B6D4.svg?style=for-the-badge&logo=github)](https://github.com/Audira141415)
@@ -24,20 +24,20 @@
 > Dilarang keras menyalin, mendistribusikan ulang, menyewakan, mendekompilasi, merekayasa balik (*reverse engineer*), atau memanfaatkan kode sumber ini untuk keperluan komersial publik tanpa perjanjian lisensi resmi tertulis dari **AUDIRA (Agus Dwi R)**.
 >
 > 📄 Rincian ketentuan hukum tercantum lengkap pada file [LICENSE](LICENSE).  
-> ✉️ Untuk pembelian lisensi enterprise, deployment on-premise, atau kemitraan komersial, silakan hubungi [Profil GitHub Audira141415](https://github.com/Audira141415).
+> ✉️ Untuk pembelian lisensi, deployment on-premise, atau kemitraan komersial, silakan hubungi [Profil GitHub Audira141415](https://github.com/Audira141415).
 
 ---
 
-## 📖 Ringkasan Eksekutif (Platform Overview)
+## 📖 Ringkasan Platform (Platform Overview)
 
-**AUDIRA NetOps AI** adalah platform operasi jaringan enterprise terpadu yang memadukan keandalan tool klasik teknisi jaringan dengan kecerdasan buatan otonom:
-* **PuTTY-like Live Terminal**: Terminal SSH multi-sesi dengan streaming WebSocket real-time, pewarnaan ANSI native, dan indikator latency.
-* **WinBox-like Node Management**: Inspeksi komprehensif perangkat MikroTik RouterOS v7 dan perangkat multi-vendor (17 sub-tab: Interface, IP, Route, Firewall, NAT, DHCP, DNS, VLAN, Bridge, VPN, Queues, Logs, dll).
-* **Enterprise NOC Observability**: Tata letak *3-Column Holographic Cyber NOC* modern dengan visualisasi metrik live, grafik throughput Mbps ganda, dan ring status perangkat.
+**AUDIRA NetOps AI** adalah platform operasi jaringan terpadu yang memadukan keandalan tool klasik teknisi jaringan dengan asistensi AI berpagar pengaman (*safety-guarded*):
+* **PuTTY-Style Live Terminal**: Terminal SSH multi-sesi dengan streaming WebSocket real-time, pewarnaan ANSI native, clustering multi-tab, dan deteksi port konsol serial hardware.
+* **WinBox-Style Node Management**: Inspeksi komprehensif perangkat MikroTik RouterOS v7 dan perangkat multi-vendor (Interface, IP, Route, Firewall, NAT, DHCP, DNS, VLAN, Bridge, VPN, Queues, System Resources).
+* **NOC Observability & Theming**: Tata letak multi-kolom interaktif dengan visualisasi metrik live, grafik throughput Mbps ganda, ring status perangkat, dan dukungan 4 tema visual resmi (*Studio Dark, Holographic Cyber NOC, Obsidian Blue, Matrix Green*).
 * **Interactive Network Topology**: Pemetaan hierarkis visual (ISP ➔ Core ➔ Distribution ➔ Access Devices) dengan deteksi link error otomatis (*pulsing red line*).
-* **Autonomous AI Network Copilot**: Asisten AI teknisi jaringan bertenaga model lokal **Ollama (`qwen2.5:7b`)** atau cloud LLM (Google Gemini / OpenAI).
-* **9-Step AI Safety Execution Pipeline**: Protokol keamanan berlapis di mana AI hanya dapat bertindak melalui 26 tools terdaftar; perintah destruktif (*reboot*, *system reset*, *mass delete*) wajib melalui persetujuan operator (*Human-in-the-Loop*).
-* **Disaster Recovery & Config Rollback**: Pembuatan snapshot backup otomatis sebelum perubahan diterapkan, perbandingan visual diff warna (Hijau/Merah/Kuning), dan rollback instan.
+* **AI Network Copilot with Safety Pipeline**: Asisten AI teknisi jaringan bertenaga model lokal **Ollama (`qwen2.5:7b`)** atau model cloud (Gemini / OpenAI / Anthropic) yang terhubung ke 51 Registered Tools dan Model Context Protocol (MCP).
+* **9-Step AI Safety Execution Pipeline**: Protokol keamanan bertingkat di mana AI tidak dapat mengeksekusi perubahan sembarangan; perintah berisiko tinggi (*reboot*, *system reset*, *mass delete*) wajib melalui persetujuan operator (*Human-in-the-Loop Gate* & Four-Eyes Quorum).
+* **Disaster Recovery & Config Rollback**: Pembuatan snapshot backup otomatis sebelum perubahan diterapkan, perbandingan visual diff warna (Monaco Diff Editor), dan rekonsiliasi drift GitOps.
 
 ---
 
@@ -280,24 +280,45 @@ USE_MOCK_DEVICES=false
 SIMULATE_TELEMETRY=false
 ```
 
-### 4. Menjalankan Aplikasi (1-Klik via Windows Batch)
-Cukup jalankan file batch:
+### 4. Menjalankan Aplikasi
+
+#### A. Web Stack (Rekomendasi Utama)
+Cukup jalankan file launcher Windows:
 ```cmd
 start.bat
 ```
-Atau jalankan perintah pnpm:
+Atau melalui terminal:
 ```bash
 pnpm dev
 ```
+*Skrip `start.bat` secara otomatis membersihkan port lama (5180, 3000, 3001), memvalidasi status Docker, menjalankan Web + API + Worker, dan membuka browser Anda.*
 
-* **NOC Web Console**: Buka [http://localhost:5180](http://localhost:5180) di browser Anda.
+Untuk menghentikan seluruh layanan secara bersih:
+```cmd
+stop.bat
+```
+
+#### B. Desktop Shell (Tauri 2 - Opsional)
+AUDIRA NetOps AI menyertakan shell desktop native berbasis Rust (Tauri 2) di `apps/desktop`. Untuk menjalankannya secara terpisah:
+```bash
+pnpm dev:desktop
+```
+*(Memerlukan Rust & Cargo terpasang pada sistem operasi Windows Anda).*
+
+* **NOC Web Console**: [http://localhost:5180](http://localhost:5180)
 * **REST API Gateway**: [http://localhost:3000/api/v1](http://localhost:3000/api/v1)
 * **WebSocket Live Gateway**: `ws://localhost:3000/ws`
+* **Worker Daemon Health**: [http://localhost:3001/health](http://localhost:3001/health)
 
 ### 5. Menjalankan Database Container (PostgreSQL & Redis)
-Jika ingin mengaktifkan persistensi database PostgreSQL 23 tabel secara instan:
+Jika ingin mengaktifkan persistensi database PostgreSQL 23 tabel dan cache Redis:
 ```bash
-docker compose up -d postgres redis
+pnpm docker:dev
+```
+Kemudian terapkan skema dan seed data:
+```bash
+pnpm db:migrate
+pnpm db:seed
 ```
 
 ---

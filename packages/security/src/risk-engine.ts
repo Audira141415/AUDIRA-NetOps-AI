@@ -78,6 +78,21 @@ export function evaluateCommandRisk(command: string): RiskLevel {
 }
 
 /**
+ * Returns true if the command performs critical/destructive actions requiring dual-operator signoff.
+ */
+export function requiresDualApproval(command: string): boolean {
+  return evaluateCommandRisk(command) === 'CRITICAL';
+}
+
+/**
+ * Returns true if the command modifies network state and mandates pre-flight RSC snapshot.
+ */
+export function requiresPreFlightBackup(command: string): boolean {
+  const risk = evaluateCommandRisk(command);
+  return risk === 'CRITICAL' || risk === 'HIGH';
+}
+
+/**
  * Types of Change Freeze Windows.
  */
 export type ChangeFreezeWindowType =

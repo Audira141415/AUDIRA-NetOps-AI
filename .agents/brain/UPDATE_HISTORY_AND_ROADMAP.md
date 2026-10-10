@@ -47,6 +47,29 @@
 - **Docker Stderr Suppression**:
   - Menyaring keluaran stderr pada pengecekan Docker daemon di [`scripts/start.ps1`](file:///f:/AUDIRA-NetOps-AI/scripts/start.ps1) agar tidak memunculkan baris merah saat mode simulated demo aktif.
 
+### Versi v1.2.0 (Engineering Rigor, Real Testing & Credibility Hardening) — 2026-10-10
+- **Pembersihan Klaim & Peningkatan Kredibilitas README**:
+  - Menghapus klaim hiperbola "Observabilitas Telemetri Hologram" dan menyelaraskan seluruh terminologi menjadi akurat (*NOC Observability & Multi-Theme System*).
+  - Mengubah klaim "Autonomous" menjadi representasi nyata: *AI Network Copilot dengan 9-Step Safety Guardrails & Human-in-the-Loop Operator Gate*.
+  - Menjelaskan status nyata skrip launcher Windows (`start.bat`, `stop.bat`, `save.bat`) dan shell desktop opsional Tauri 2.
+- **Implementasi Automated Testing Framework (Vitest)**:
+  - Mengintegrasikan Vitest 2.1.9 di seluruh workspace Turborepo (`pnpm test`).
+  - Menulis 18 automated unit tests untuk modul-modul kritis:
+    - [`masking.test.ts`](file:///f:/AUDIRA-NetOps-AI/packages/security/test/masking.test.ts): Redaksi password, private key, dan bearer token.
+    - [`risk-engine.test.ts`](file:///f:/AUDIRA-NetOps-AI/packages/security/test/risk-engine.test.ts): Klasifikasi CRITICAL/HIGH/LOW, validasi blacklist, dual-approval requirement.
+    - [`config-drift.test.ts`](file:///f:/AUDIRA-NetOps-AI/packages/security/test/config-drift.test.ts): Normalisasi komentar, deteksi shadow change, kalkulasi skor drift.
+    - [`auth.test.ts`](file:///f:/AUDIRA-NetOps-AI/apps/api/test/auth.test.ts): Verifikasi JWT bearer token dan penjagaan RBAC permission.
+    - [`devices.test.ts`](file:///f:/AUDIRA-NetOps-AI/apps/api/test/devices.test.ts): Logika pemfilteran perangkat multi-vendor dan query pencarian.
+- **Migrasi & Seeding Database Nyata (PostgreSQL)**:
+  - Mengganti `console.log` pajangan di `db:migrate` dan `db:seed` dengan script eksekutor nyata [`migrate.ts`](file:///f:/AUDIRA-NetOps-AI/apps/api/src/database/migrate.ts) dan [`seed.ts`](file:///f:/AUDIRA-NetOps-AI/apps/api/src/database/seed.ts) menggunakan `pg` (node-postgres) dan pembungkus transaksi DDL/DML.
+  - Menambahkan penanganan error yang jujur dan instruksi resolusi saat PostgreSQL offline.
+- **Continuous Integration (CI) Workflow**:
+  - Membangun pipeline otomatis [`.github/workflows/ci.yml`](file:///f:/AUDIRA-NetOps-AI/.github/workflows/ci.yml) untuk menjalankan typecheck, vitest test suites, dan compile build pada setiap push / pull request.
+- **Ekspansi Dokumentasi Teknis**:
+  - Memperdalam [`ARCHITECTURE.md`](file:///f:/AUDIRA-NetOps-AI/docs/architecture/ARCHITECTURE.md), [`API.md`](file:///f:/AUDIRA-NetOps-AI/docs/api/API.md), dan [`SECURITY.md`](file:///f:/AUDIRA-NetOps-AI/docs/security/SECURITY.md) dengan spesifikasi teknis dan diagram alur.
+- **Sanitasi Kredensial `.env.example`**:
+  - Mengganti seluruh kata sandi literal dengan placeholder eksplisit (`YOUR_STRONG_POSTGRES_PASSWORD`, dll).
+
 ---
 
 ## 2. Roadmap Pengembangan Selanjutnya

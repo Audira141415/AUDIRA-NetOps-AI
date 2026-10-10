@@ -1,0 +1,43 @@
+name: AUDIRA NetOps AI - Continuous Integration (CI)
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-check:
+    name: Lint, Typecheck, Test & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm Package Manager
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9.15.0
+
+      - name: Setup Node.js Runtime (v20 LTS)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install Workspace Dependencies
+        run: pnpm install
+
+      - name: Run Strict TypeScript Typechecking
+        run: pnpm typecheck
+
+      - name: Run Automated Test Suites (Vitest)
+        run: pnpm test
+
+      - name: Compile Production Bundles (Turbo Build)
+        run: pnpm build

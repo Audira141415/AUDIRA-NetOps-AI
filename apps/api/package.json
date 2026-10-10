@@ -8,8 +8,9 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
-    "db:migrate": "node -e \"console.log('Database schema applied from database/schema/init.sql')\"",
-    "db:seed": "node -e \"console.log('Database seeded from database/seeds/seed.sql')\""
+    "test": "vitest run",
+    "db:migrate": "tsx src/database/migrate.ts",
+    "db:seed": "tsx src/database/seed.ts"
   },
   "dependencies": {
     "@audira/ai-agent": "workspace:*",
@@ -27,6 +28,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
     "jsonwebtoken": "^9.0.2",
+    "pg": "^8.23.1",
     "ssh2": "^1.17.0",
     "ws": "^8.18.0"
   },
@@ -36,6 +38,7 @@
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.5.5",
+    "@types/pg": "^8.23.1",
     "@types/ws": "^8.5.12",
     "tsx": "^4.19.1",
     "typescript": "^5.6.2"
