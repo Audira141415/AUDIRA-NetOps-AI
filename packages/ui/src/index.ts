@@ -1,5 +1,51 @@
 // AUDIRA NetOps UI Tokens and Constants
 
+export type NocTheme = 'studio-dark' | 'cyber-hologram' | 'obsidian-blue' | 'matrix-green';
+
+export interface NocThemeMeta {
+  name: string;
+  tagline: string;
+  previewBg: string;
+  previewBorder: string;
+  previewDot: string;
+  primaryColor: string;
+}
+
+export const NOC_THEMES: Record<NocTheme, NocThemeMeta> = {
+  'studio-dark': {
+    name: 'Studio Dark Precision',
+    tagline: 'Minimalis, Presisi Tinggi & Border Hairline',
+    previewBg: '#09090b',
+    previewBorder: '#27272a',
+    previewDot: '#10b981',
+    primaryColor: '#38bdf8',
+  },
+  'cyber-hologram': {
+    name: 'Holographic Cyber NOC',
+    tagline: 'Futuristik, Neon Cyan Aurora & Fuchsia',
+    previewBg: '#0a051b',
+    previewBorder: 'rgba(168, 85, 247, 0.4)',
+    previewDot: '#2dd4bf',
+    primaryColor: '#ec4899',
+  },
+  'obsidian-blue': {
+    name: 'Obsidian Blue NOC',
+    tagline: 'Kontras Tinggi Video-Wall Datadog Style',
+    previewBg: '#070c18',
+    previewBorder: 'rgba(56, 189, 248, 0.4)',
+    previewDot: '#38bdf8',
+    primaryColor: '#3b82f6',
+  },
+  'matrix-green': {
+    name: 'Matrix Phosphor Green',
+    tagline: 'Retro-Hacker VT100 / PuTTY Emerald',
+    previewBg: '#050d08',
+    previewBorder: 'rgba(34, 197, 94, 0.4)',
+    previewDot: '#22c55e',
+    primaryColor: '#4ade80',
+  },
+};
+
 export const NOC_THEME = {
   colors: {
     bgDark: '#0B0F17',

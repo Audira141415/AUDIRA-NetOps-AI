@@ -7,7 +7,7 @@ Write-Host "====================================================================
 Write-Host "[INFO] Terminating all AUDIRA NetOps AI processes and releasing network ports..." -ForegroundColor Gray
 Write-Host ""
 
-$ports = @(5180, 3000, 3001)
+$ports = @(5180, 5181, 3000, 3001)
 
 foreach ($port in $ports) {
     $connections = Get-NetTCPConnection -LocalPort $port -ErrorAction SilentlyContinue

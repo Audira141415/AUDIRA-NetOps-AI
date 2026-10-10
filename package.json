@@ -4,9 +4,11 @@
   "private": true,
   "description": "AUDIRA NetOps AI - Network Management. Terminal. Automation. AI.",
   "scripts": {
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --filter=!@audira/desktop",
     "dev:web": "turbo run dev --filter=@audira/web",
     "dev:api": "turbo run dev --filter=@audira/api",
+    "dev:worker": "turbo run dev --filter=@audira/worker",
+    "dev:desktop": "turbo run dev --filter=@audira/desktop",
     "build": "turbo run build",
     "test": "turbo run test",
     "lint": "turbo run lint",

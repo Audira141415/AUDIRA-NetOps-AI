@@ -1,4 +1,5 @@
-// Topbar Component - Holographic Luxury NOC Cockpit Theme
+// Topbar Component - Minimalist Dark Studio (Vercel / Apple Developer Style)
+// Compact desktop height, crisp typography, clean micro-borders, semantic status indicators
 
 import React, { useEffect, useState } from 'react';
 import {
@@ -20,8 +21,12 @@ import {
   X,
   AlertTriangle,
   CheckCircle2,
+  Server,
+  Terminal,
+  Palette,
+  Check,
 } from 'lucide-react';
-import { useNetOpsStore, OperationMode } from '../../store/useNetOpsStore';
+import { useNetOpsStore, OperationMode, NocTheme, NOC_THEMES } from '../../store/useNetOpsStore';
 
 export const Topbar: React.FC = () => {
   const {
@@ -41,10 +46,13 @@ export const Topbar: React.FC = () => {
     currentUser,
     logout,
     showToast,
+    theme,
+    setTheme,
   } = useNetOpsStore();
 
   const [isModeDropdownOpen, setIsModeDropdownOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
   const [hasCopiedUri, setHasCopiedUri] = useState(false);
 
   // Realtime WIB time & Change Freeze Window policy state
@@ -117,179 +125,148 @@ export const Topbar: React.FC = () => {
   }, [setCommandPaletteOpen]);
 
   return (
-    <header className="h-14 bg-[#0d1326]/90 backdrop-blur-2xl border-b border-cyan-500/20 px-4 flex items-center justify-between select-none z-30 shadow-[0_4px_30px_rgba(6,182,212,0.15)] relative">
-      {/* Prismatic Top Edge Accent Line */}
-      <div className="holo-line absolute top-0 left-0 right-0" />
-
-      {/* Brand & Global Search */}
-      <div className="flex items-center space-x-4 flex-1 max-w-xl">
-        {/* Brand Logo & Subtitle */}
+    <header className="h-12 bg-[#09090b]/95 backdrop-blur-md border-b border-zinc-800 px-3.5 flex items-center justify-between select-none z-30 shrink-0">
+      {/* Left: Brand Identity & Workspace URI */}
+      <div className="flex items-center space-x-3.5">
+        {/* Brand App Mark */}
         <a
           href="#/dashboard"
-          className="flex items-center space-x-3 cursor-pointer group"
+          className="flex items-center space-x-2.5 cursor-pointer group"
           onClick={(e) => {
             e.preventDefault();
             setCurrentTab('dashboard');
             window.location.hash = '#/dashboard';
           }}
         >
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 flex items-center justify-center text-white shadow-[0_0_18px_rgba(56,189,248,0.5)] border border-cyan-300/40 group-hover:scale-105 transition">
-            <span className="font-extrabold text-sm tracking-tighter">A</span>
+          <div className="w-6 h-6 rounded-md bg-zinc-800 border border-zinc-700/80 flex items-center justify-center text-white font-mono font-bold text-xs shadow-sm group-hover:bg-zinc-700 transition-colors">
+            <span>A</span>
           </div>
-          <div>
-            <div className="flex items-center space-x-1.5">
-              <span className="font-extrabold text-sm tracking-wide text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.4)]">
-                AUDIRA
-              </span>
-              <span className="font-bold text-sm text-cyan-300">
-                NetOps AI
-              </span>
-              <span className="text-[10px] font-mono text-cyan-400/80 px-1.5 py-0.2 rounded bg-cyan-950/60 border border-cyan-500/30">
-                v1.0
-              </span>
-            </div>
-            <div className="text-[10px] text-slate-400 font-sans tracking-tight -mt-0.5">
-              AI-Powered Network Operations
-            </div>
+          <div className="flex items-center space-x-1.5">
+            <span className="font-semibold text-xs text-white tracking-tight">AUDIRA</span>
+            <span className="font-medium text-xs text-zinc-400">NetOps</span>
+            <span className="text-[10px] font-mono text-zinc-500 px-1 py-0.2 rounded bg-zinc-900 border border-zinc-800">
+              v1.0
+            </span>
           </div>
         </a>
 
-        {/* Global Search Button */}
+        {/* Subtle Workspace URI Chip */}
+        <div className="hidden xl:flex items-center space-x-1.5 px-2 py-0.5 bg-zinc-900/80 border border-zinc-800 rounded-md font-mono text-[11px] text-zinc-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <span className="max-w-[220px] truncate text-zinc-300 font-medium" title={canonicalUri}>
+            {canonicalUri}
+          </span>
+          <button
+            onClick={handleCopyUri}
+            className="p-0.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
+            title="Salin URI"
+          >
+            {hasCopiedUri ? (
+              <span className="text-[9px] text-emerald-400 font-bold">OK</span>
+            ) : (
+              <Share2 className="w-2.5 h-2.5" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Center: Command Palette Trigger (Spotlight / Linear Style) */}
+      <div className="flex items-center justify-center flex-1 max-w-sm px-4">
         <button
           onClick={() => setCommandPaletteOpen(true)}
-          className="flex-1 max-w-xs flex items-center justify-between px-3 py-1.5 bg-[#131d38]/80 hover:bg-[#1a2647] border border-cyan-500/25 hover:border-cyan-400/50 rounded-lg text-xs text-slate-300 transition shadow-[0_0_15px_rgba(6,182,212,0.1)] group"
+          className="w-full flex items-center justify-between px-2.5 py-1 bg-zinc-900/90 hover:bg-zinc-800/80 border border-zinc-800 hover:border-zinc-700 rounded-lg text-xs text-zinc-400 hover:text-zinc-200 transition-colors shadow-sm group"
         >
           <div className="flex items-center space-x-2">
-            <Search className="w-3.5 h-3.5 text-cyan-400 group-hover:text-cyan-300 transition" />
-            <span className="text-slate-400 group-hover:text-slate-200 transition text-[11px] truncate">
-              Search host, IP, commands...
+            <Search className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-300 transition-colors" />
+            <span className="text-zinc-400 group-hover:text-zinc-300 transition-colors text-[11px] truncate">
+              Search devices, IPs, commands...
             </span>
           </div>
-          <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded bg-[#0b1020] border border-cyan-500/30 text-[10px] font-mono text-cyan-300 shadow-inner shrink-0">
+          <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700/60 text-[10px] font-mono text-zinc-400">
             Ctrl K
           </kbd>
         </button>
       </div>
 
-      {/* Authoritative NOC URL & Identity Bar */}
-      <div className="hidden lg:flex items-center space-x-2 px-3 py-1 bg-[#0b1224]/80 border border-cyan-500/30 rounded-xl font-mono text-xs shadow-inner">
-        <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-        <span className="text-slate-400 text-[11px]">URI:</span>
-        <span className="text-cyan-300 font-bold max-w-xs truncate" title={canonicalUri}>
-          {canonicalUri}
-        </span>
-        <button
-          onClick={handleCopyUri}
-          className="p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-cyan-300 transition"
-          title="Salin URI Identitas Resmi"
-        >
-          {hasCopiedUri ? (
-            <span className="text-[10px] text-emerald-400 font-bold">Tersalin!</span>
-          ) : (
-            <Share2 className="w-3 h-3 text-cyan-400" />
-          )}
-        </button>
-      </div>
-
-      {/* Right Controls: Real Device Count, AI Online, Alerts, Dark Mode, Profile */}
-      <div className="flex items-center space-x-3 font-mono">
-        {/* Change Freeze & 4-Eyes Governance Window Badge */}
+      {/* Right Controls: Change Window, Mode, AI, Alerts, Profile */}
+      <div className="flex items-center space-x-2 font-mono text-xs">
+        {/* Change Freeze & Four-Eyes Governance Status Badge */}
         <button
           onClick={() => setIsFreezeModalOpen(true)}
-          className={`flex items-center space-x-2 px-2.5 py-1.5 rounded-lg border text-xs transition shadow-sm ${
+          className={`flex items-center space-x-1.5 px-2 py-1 rounded-md border text-[11px] transition-colors ${
             breakGlassActive
-              ? 'bg-amber-950/70 border-amber-500/70 text-amber-300 animate-pulse'
+              ? 'bg-amber-500/10 border-amber-500/30 text-amber-400 font-semibold'
               : isPeakFreeze
-              ? 'bg-rose-950/60 border-rose-500/50 text-rose-300 hover:bg-rose-900/60'
+              ? 'bg-rose-500/10 border-rose-500/25 text-rose-400 hover:bg-rose-500/15'
               : isMaintenance
-              ? 'bg-emerald-950/50 border-emerald-500/50 text-emerald-300 hover:bg-emerald-900/50'
-              : 'bg-cyan-950/40 border-cyan-500/40 text-cyan-300 hover:bg-cyan-900/50'
+              ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-400 hover:bg-emerald-500/15'
+              : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-zinc-200'
           }`}
-          title="Klik untuk membuka Status Kebijakan Change Freeze & Four-Eyes Governance"
+          title="Klik untuk membuka Kontrol Kebijakan Change Freeze & Four-Eyes Governance"
         >
           {breakGlassActive ? (
-            <Unlock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+            <Unlock className="w-3 h-3 text-amber-400 shrink-0" />
           ) : isPeakFreeze ? (
-            <Lock className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+            <Lock className="w-3 h-3 text-rose-400 shrink-0" />
           ) : (
-            <Clock className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+            <Clock className="w-3 h-3 text-emerald-400 shrink-0" />
           )}
-          <div className="hidden sm:flex flex-col text-left">
-            <span className="font-bold text-[10px] tracking-tight leading-tight">
-              {breakGlassActive
-                ? 'BREAK-GLASS ACTIVE'
-                : isPeakFreeze
-                ? 'PEAK FREEZE (READ-ONLY)'
-                : isMaintenance
-                ? 'MAINTENANCE WINDOW'
-                : 'OFF-PEAK WINDOW'}
-            </span>
-            <span className="text-[9px] text-slate-400 font-mono leading-none">
-              {wibTime || '08:00 WIB'} · 4-Eyes Enforced
-            </span>
-          </div>
-        </button>
-
-        {/* Real Device Count Chip */}
-        <button
-          onClick={() => (devices.length === 0 ? setAddDeviceModalOpen(true) : setCurrentTab('devices'))}
-          className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[#131d38]/80 hover:bg-[#1a2647] border border-cyan-500/30 hover:border-cyan-400/60 text-xs shadow-[0_0_12px_rgba(6,182,212,0.15)] transition"
-          title={devices.length === 0 ? 'Click to add your first device' : `${devices.length} registered devices`}
-        >
-          <Share2 className="w-3.5 h-3.5 text-cyan-400" />
-          <span className="text-cyan-200 font-bold tracking-wide">
-            {devices.length} {devices.length === 1 ? 'DEVICE' : 'DEVICES'}
+          <span className="hidden lg:inline text-[10.5px] font-medium tracking-tight">
+            {breakGlassActive
+              ? 'Break-Glass'
+              : isPeakFreeze
+              ? 'Freeze'
+              : isMaintenance
+              ? 'Maintenance'
+              : 'Off-Peak'}
           </span>
+          <span className="text-[10px] text-zinc-400">{wibTime.slice(0, 5)} WIB</span>
         </button>
 
         {/* System Operation Mode Selector */}
         <div className="relative">
           <button
             onClick={() => setIsModeDropdownOpen(!isModeDropdownOpen)}
-            className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg border text-xs transition shadow-sm ${
-              operationMode === 'SUPERVISED'
-                ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/50'
-                : operationMode === 'AUTONOMOUS'
-                ? 'bg-blue-950/40 border-cyan-500/40 text-cyan-300 hover:bg-blue-900/50'
-                : 'bg-amber-950/40 border-amber-500/40 text-amber-300 hover:bg-amber-900/50'
-            }`}
-            title="Ubah Mode Operasi Sistem (Supervised, Autonomous, Safe Mode)"
+            className="flex items-center space-x-1.5 px-2 py-1 rounded-md bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 text-[11px] transition-colors"
+            title="Mode Operasi Sistem"
           >
-            {operationMode === 'SUPERVISED' ? (
-              <Shield className="w-3.5 h-3.5 text-emerald-400" />
-            ) : operationMode === 'AUTONOMOUS' ? (
-              <Zap className="w-3.5 h-3.5 text-cyan-400" />
-            ) : (
-              <span className="text-amber-400 text-xs font-bold">🧪</span>
-            )}
-            <span className="font-semibold uppercase tracking-wider text-[10px]">
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                operationMode === 'SUPERVISED'
+                  ? 'bg-emerald-500'
+                  : operationMode === 'AUTONOMOUS'
+                  ? 'bg-blue-500'
+                  : 'bg-amber-500'
+              }`}
+            />
+            <span className="hidden md:inline font-medium text-[10.5px]">
               {operationMode === 'SUPERVISED'
                 ? 'Supervised'
                 : operationMode === 'AUTONOMOUS'
                 ? 'Autonomous'
                 : 'Safe Mode'}
             </span>
-            <ChevronDown className="w-3 h-3 text-slate-400" />
+            <ChevronDown className="w-3 h-3 text-zinc-500" />
           </button>
 
           {isModeDropdownOpen && (
-            <div className="absolute top-10 right-0 w-60 bg-[#0d1527] border border-cyan-500/30 rounded-xl shadow-[0_10px_35px_rgba(0,0,0,0.8)] p-2 z-50 text-xs font-sans space-y-1">
-              <div className="text-[10px] font-mono text-slate-400 px-2 py-1 uppercase tracking-wider border-b border-slate-800">
-                System Operation Mode
+            <div className="absolute top-9 right-0 w-56 bg-[#121215] border border-zinc-800 rounded-lg shadow-xl p-1.5 z-50 text-xs font-sans space-y-0.5">
+              <div className="text-[10px] font-mono text-zinc-500 px-2 py-1 uppercase tracking-wider">
+                Operation Mode
               </div>
               <button
                 onClick={() => {
                   setOperationMode('SUPERVISED');
                   setIsModeDropdownOpen(false);
                 }}
-                className={`w-full text-left p-2 rounded-lg flex items-start space-x-2 transition ${
-                  operationMode === 'SUPERVISED' ? 'bg-emerald-950/60 border border-emerald-500/40' : 'hover:bg-white/5'
+                className={`w-full text-left px-2 py-1.5 rounded-md flex items-center space-x-2 transition-colors ${
+                  operationMode === 'SUPERVISED' ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200'
                 }`}
               >
-                <Shield className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
                 <div>
-                  <div className="font-bold text-white text-[11px]">Supervised (Default)</div>
-                  <div className="text-[10px] text-slate-400">Setiap perubahan wajib disetujui operator.</div>
+                  <div className="font-medium text-[11px]">Supervised</div>
+                  <div className="text-[10px] text-zinc-500">Perubahan butuh approval operator.</div>
                 </div>
               </button>
               <button
@@ -297,14 +274,14 @@ export const Topbar: React.FC = () => {
                   setOperationMode('AUTONOMOUS');
                   setIsModeDropdownOpen(false);
                 }}
-                className={`w-full text-left p-2 rounded-lg flex items-start space-x-2 transition ${
-                  operationMode === 'AUTONOMOUS' ? 'bg-blue-950/60 border border-cyan-500/40' : 'hover:bg-white/5'
+                className={`w-full text-left px-2 py-1.5 rounded-md flex items-center space-x-2 transition-colors ${
+                  operationMode === 'AUTONOMOUS' ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200'
                 }`}
               >
-                <Zap className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
                 <div>
-                  <div className="font-bold text-white text-[11px]">Autonomous Copilot</div>
-                  <div className="text-[10px] text-slate-400">Self-healing otomatis untuk insiden resiko rendah.</div>
+                  <div className="font-medium text-[11px]">Autonomous</div>
+                  <div className="text-[10px] text-zinc-500">Self-healing untuk risiko rendah.</div>
                 </div>
               </button>
               <button
@@ -312,127 +289,186 @@ export const Topbar: React.FC = () => {
                   setOperationMode('SAFE_MODE');
                   setIsModeDropdownOpen(false);
                 }}
-                className={`w-full text-left p-2 rounded-lg flex items-start space-x-2 transition ${
-                  operationMode === 'SAFE_MODE' ? 'bg-amber-950/60 border border-amber-500/40' : 'hover:bg-white/5'
+                className={`w-full text-left px-2 py-1.5 rounded-md flex items-center space-x-2 transition-colors ${
+                  operationMode === 'SAFE_MODE' ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200'
                 }`}
               >
-                <span className="text-sm shrink-0">🧪</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
                 <div>
-                  <div className="font-bold text-white text-[11px]">Safe Mode (Dry Run)</div>
-                  <div className="text-[10px] text-slate-400">Simulasi pipeline tanpa menyentuh live router.</div>
+                  <div className="font-medium text-[11px]">Safe Mode</div>
+                  <div className="text-[10px] text-zinc-500">Simulasi tanpa menyentuh router.</div>
                 </div>
               </button>
             </div>
           )}
         </div>
 
-        {/* AI Recommendation Mode Toggle */}
+        {/* Registered Devices Counter */}
         <button
-          onClick={() => setRecommendationModeActive(!recommendationModeActive)}
-          className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg border text-xs transition shadow-sm ${
-            recommendationModeActive
-              ? 'bg-purple-950/50 border-purple-500/50 text-purple-200 shadow-[0_0_12px_rgba(168,85,247,0.3)]'
-              : 'bg-[#131d38]/80 border-slate-700 text-slate-400 hover:text-white'
-          }`}
-          title="Toggle AI Recommendation Mode: Saran optimasi & hardening router otomatis"
+          onClick={() => (devices.length === 0 ? setAddDeviceModalOpen(true) : setCurrentTab('devices'))}
+          className="hidden sm:flex items-center space-x-1.5 px-2 py-1 rounded-md bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-zinc-200 text-[11px] transition-colors"
+          title={`${devices.length} registered devices`}
         >
-          <Sparkles className={`w-3.5 h-3.5 ${recommendationModeActive ? 'text-purple-400 animate-pulse' : 'text-slate-400'}`} />
-          <span className="text-[10px] font-bold">
-            {recommendationModeActive ? 'AI RECS: ON' : 'AI RECS: OFF'}
-          </span>
+          <Server className="w-3 h-3 text-zinc-400" />
+          <span className="font-mono text-zinc-300 font-medium">{devices.length}</span>
         </button>
 
-        {/* AI Status Chip: 🤖 AI ONLINE */}
+        {/* AI Copilot Drawer Trigger */}
         <button
           onClick={() => setAiDrawerOpen(!isAiDrawerOpen)}
-          className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[#131d38]/80 hover:bg-[#1a2647] border border-blue-500/35 hover:border-cyan-400/60 text-xs transition shadow-[0_0_15px_rgba(59,130,246,0.25)] group"
+          className={`flex items-center space-x-1.5 px-2 py-1 rounded-md border text-[11px] transition-colors ${
+            isAiDrawerOpen
+              ? 'bg-zinc-800 text-white border-zinc-700'
+              : 'bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border-zinc-800'
+          }`}
+          title="Toggle AI Network Copilot"
         >
-          <Bot className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition" />
-          <span className="font-bold text-transparent bg-gradient-to-r from-blue-300 via-cyan-300 to-teal-300 bg-clip-text">
-            AI ONLINE
-          </span>
-          <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse" />
+          <Bot className="w-3.5 h-3.5 text-zinc-300" />
+          <span className="hidden md:inline font-medium text-[10.5px]">Copilot</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
         </button>
 
-        {/* Notification Alerts Bell (Dynamic counter) */}
+        {/* Notification Alerts Bell */}
         <button
           onClick={() => setCurrentTab('alerts')}
-          className="relative p-2 rounded-lg bg-[#131d38]/80 hover:bg-[#1a2647] border border-cyan-500/25 text-slate-300 hover:text-white transition shadow-sm"
+          className="relative p-1.5 rounded-md bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors"
           title={`${activeAlerts.length} Active Alerts`}
         >
-          <Bell className="w-4 h-4 text-slate-300" />
+          <Bell className="w-3.5 h-3.5" />
           {activeAlerts.length > 0 && (
-            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white font-bold text-[9px] flex items-center justify-center shadow-[0_0_10px_#f43f5e] animate-pulse">
+            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-rose-500 text-white font-bold text-[8.5px] flex items-center justify-center">
               {activeAlerts.length}
             </span>
           )}
         </button>
 
-        {/* Public Landing & License Button */}
-        <button
-          onClick={() => setCurrentTab('landing')}
-          className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-950/70 hover:bg-indigo-900 border border-indigo-500/40 text-indigo-200 text-xs font-semibold transition shadow-sm"
-          title="Lihat Landing Page & Sertifikat Lisensi AUDIRA"
-        >
-          <Globe className="w-3.5 h-3.5 text-cyan-400" />
-          <span className="hidden sm:inline">Landing Page</span>
-        </button>
+        {/* NOC Theme Switcher */}
+        <div className="relative">
+          <button
+            onClick={() => {
+              setIsThemeDropdownOpen(!isThemeDropdownOpen);
+              setIsUserDropdownOpen(false);
+              setIsModeDropdownOpen(false);
+            }}
+            className="flex items-center space-x-1.5 px-2 py-1 rounded-md bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white text-[11px] transition-colors"
+            title={`Tema NOC: ${NOC_THEMES[theme]?.name || theme}`}
+          >
+            <Palette className="w-3.5 h-3.5 text-zinc-400" />
+            <span
+              className="w-2 h-2 rounded-full ring-1 ring-white/20"
+              style={{ backgroundColor: NOC_THEMES[theme]?.previewDot || '#10b981' }}
+            />
+            <span className="hidden xl:inline text-[10.5px] font-medium text-zinc-300">
+              {NOC_THEMES[theme]?.name.split(' ')[0]}
+            </span>
+            <ChevronDown className="w-2.5 h-2.5 text-zinc-500" />
+          </button>
 
-        {/* Dark Mode Icon */}
-        <button
-          className="p-2 rounded-lg bg-[#131d38]/80 hover:bg-[#1a2647] border border-cyan-500/25 text-slate-300 hover:text-white transition shadow-sm"
-          title="Dark Mode Active"
-        >
-          <Moon className="w-4 h-4 text-cyan-300" />
-        </button>
+          {isThemeDropdownOpen && (
+            <div className="absolute right-0 mt-2 w-64 bg-[#121215] border border-zinc-800 rounded-xl shadow-2xl p-2 z-50 text-xs font-sans space-y-1 animate-in fade-in zoom-in-95 duration-150">
+              <div className="px-2 py-1.5 border-b border-zinc-800/80 flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-semibold flex items-center space-x-1.5">
+                  <Palette className="w-3 h-3 text-zinc-400" />
+                  <span>Preset Tema NOC</span>
+                </span>
+                <span className="text-[9px] font-mono px-1 rounded bg-zinc-800 text-zinc-400">4 Presets</span>
+              </div>
 
-        {/* User Profile: avatar + admin + Role + Dropdown */}
-        <div className="relative pl-2 border-l border-cyan-500/20">
+              <div className="space-y-1 pt-1">
+                {(Object.keys(NOC_THEMES) as NocTheme[]).map((themeKey) => {
+                  const item = NOC_THEMES[themeKey];
+                  const isSelected = theme === themeKey;
+                  return (
+                    <button
+                      key={themeKey}
+                      onClick={() => {
+                        setTheme(themeKey);
+                        setIsThemeDropdownOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between p-2 rounded-lg text-left transition-all ${
+                        isSelected
+                          ? 'bg-zinc-800/90 text-white border border-zinc-700/80 shadow-sm'
+                          : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/80 border border-transparent'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-2.5">
+                        <div
+                          className="w-5 h-5 rounded-md border flex items-center justify-center shrink-0 shadow-inner"
+                          style={{
+                            backgroundColor: item.previewBg,
+                            borderColor: item.previewBorder,
+                          }}
+                        >
+                          <span
+                            className="w-2 h-2 rounded-full"
+                            style={{ backgroundColor: item.previewDot }}
+                          />
+                        </div>
+                        <div>
+                          <div className={`text-[11px] font-semibold leading-tight ${isSelected ? 'text-white' : 'text-zinc-300'}`}>
+                            {item.name}
+                          </div>
+                          <div className="text-[9.5px] text-zinc-500 font-sans leading-tight mt-0.5">
+                            {item.tagline}
+                          </div>
+                        </div>
+                      </div>
+
+                      {isSelected && <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0 ml-1.5" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* User Profile */}
+        <div className="relative pl-1 border-l border-zinc-800">
           <button
             onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-            className="flex items-center space-x-2.5 p-1 rounded-xl hover:bg-white/5 transition focus:outline-none"
-            title="Sesi Operator NOC"
+            className="flex items-center space-x-1.5 p-1 rounded-md hover:bg-zinc-800/80 transition-colors"
+            title="User Profile"
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-500 border border-cyan-300/40 flex items-center justify-center text-white text-xs font-bold shadow-[0_0_10px_rgba(6,182,212,0.3)]">
-              <UserIcon className="w-4 h-4 text-white" />
+            <div className="w-5 h-5 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-300 text-[10px] font-bold">
+              <UserIcon className="w-3 h-3 text-zinc-400" />
             </div>
-            <div className="hidden xl:block text-left text-xs font-sans">
-              <div className="text-white font-bold leading-none">{currentUser?.name || 'admin'}</div>
-              <div className="text-[10px] text-cyan-300 font-mono mt-0.5">{currentUser?.role || 'Super Admin'}</div>
-            </div>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden xl:block" />
+            <span className="hidden xl:inline text-[11px] font-sans font-medium text-zinc-300">
+              {currentUser?.name || 'admin'}
+            </span>
+            <ChevronDown className="w-2.5 h-2.5 text-zinc-500 hidden xl:block" />
           </button>
 
           {isUserDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-64 bg-[#0a1124] border border-cyan-500/30 rounded-2xl shadow-2xl p-3 z-50 animate-in fade-in slide-in-from-top-2 duration-150 font-sans text-xs">
-              <div className="pb-2.5 mb-2 border-b border-slate-800">
-                <div className="text-white font-bold">{currentUser?.name || 'Pratama NOC Admin'}</div>
-                <div className="text-[11px] text-slate-400 font-mono">{currentUser?.email || 'admin@noc.audira.net'}</div>
-                <div className="mt-1.5 inline-block text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950/80 border border-cyan-500/30 text-cyan-300">
+            <div className="absolute right-0 mt-2 w-56 bg-[#121215] border border-zinc-800 rounded-lg shadow-xl p-2 z-50 text-xs font-sans space-y-1">
+              <div className="px-2 py-1.5 border-b border-zinc-800">
+                <div className="text-white font-medium text-[11px]">{currentUser?.name || 'Operator'}</div>
+                <div className="text-[10px] text-zinc-500 font-mono">{currentUser?.email || 'admin@noc.audira.net'}</div>
+                <div className="mt-1 text-[9.5px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 border border-zinc-700 text-zinc-400 inline-block">
                   {currentUser?.role || 'Super Admin'}
                 </div>
               </div>
 
-              <div className="space-y-1 text-[11px] font-mono text-slate-400 py-1">
+              <div className="px-2 py-1 text-[10.5px] font-mono text-zinc-400 space-y-0.5">
                 <div className="flex justify-between">
-                  <span>Client IP:</span>
-                  <span className="text-slate-200">192.168.10.50</span>
+                  <span>IP:</span>
+                  <span className="text-zinc-200">192.168.10.50</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Session:</span>
-                  <span className="text-emerald-400">Encrypted (TLS 1.3)</span>
+                  <span>TLS:</span>
+                  <span className="text-emerald-400">1.3 Active</span>
                 </div>
               </div>
 
-              <div className="pt-2 mt-2 border-t border-slate-800">
+              <div className="pt-1 border-t border-zinc-800">
                 <button
                   onClick={() => {
                     setIsUserDropdownOpen(false);
                     logout();
                   }}
-                  className="w-full py-1.5 px-3 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 border border-rose-500/30 text-rose-300 text-xs font-semibold transition flex items-center justify-center space-x-1.5"
+                  className="w-full text-left px-2 py-1.5 rounded text-rose-400 hover:bg-rose-500/10 text-[11px] font-medium transition-colors"
                 >
-                  <span>Keluar / Ganti Akun Operator</span>
+                  Keluar / Switch Account
                 </button>
               </div>
             </div>
@@ -440,103 +476,93 @@ export const Topbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Change Freeze & Four-Eyes Governance Modal */}
+      {/* Change Freeze & Four-Eyes Governance Modal (Studio Clean Style) */}
       {isFreezeModalOpen && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-[#0b1226] border border-cyan-500/40 rounded-2xl max-w-lg w-full p-6 shadow-[0_0_50px_rgba(6,182,212,0.25)] space-y-5 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#121215] border border-zinc-800 rounded-xl max-w-lg w-full p-5 shadow-2xl space-y-4 font-sans text-xs">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
               <div className="flex items-center space-x-2.5">
                 <div
-                  className={`p-2 rounded-xl border ${
+                  className={`p-2 rounded-lg border ${
                     breakGlassActive
-                      ? 'bg-amber-950/60 border-amber-500/50 text-amber-300'
+                      ? 'bg-amber-500/10 border-amber-500/30 text-amber-400'
                       : isPeakFreeze
-                      ? 'bg-rose-950/60 border-rose-500/50 text-rose-300'
-                      : 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300'
+                      ? 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+                      : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
                   }`}
                 >
-                  {breakGlassActive ? <Unlock className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
+                  {breakGlassActive ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white tracking-wide">
-                    Enterprise Change Freeze &amp; Four-Eyes Quorum
+                  <h3 className="text-xs font-semibold text-white tracking-tight">
+                    Change Freeze &amp; Four-Eyes Governance
                   </h3>
-                  <div className="text-[11px] text-slate-400 font-mono">
+                  <div className="text-[10px] text-zinc-500 font-mono">
                     WIB Local Time: {wibTime}
                   </div>
                 </div>
               </div>
               <button
                 onClick={() => setIsFreezeModalOpen(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800/60 transition"
+                className="text-zinc-500 hover:text-white p-1 rounded-md hover:bg-zinc-800 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Policy Status Overview */}
-            <div className="space-y-2.5 text-xs">
-              <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+            <div className="space-y-2 text-xs">
+              <div className="p-3 rounded-lg bg-zinc-900 border border-zinc-800 space-y-1.5 font-mono text-[11px]">
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Jendela Kebijakan Aktif:</span>
+                  <span className="text-zinc-400">Jendela Aktif:</span>
                   <span
-                    className={`font-mono font-bold px-2 py-0.5 rounded text-[10px] ${
+                    className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
                       isPeakFreeze
-                        ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                        ? 'bg-rose-500/10 text-rose-400 border border-rose-500/25'
                         : isMaintenance
-                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                        : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/25'
+                        : 'bg-zinc-800 text-zinc-300 border border-zinc-700'
                     }`}
                   >
                     {isPeakFreeze
-                      ? 'PEAK HOURS FREEZE (08:00–22:00 WIB)'
+                      ? 'PEAK FREEZE (08:00–22:00 WIB)'
                       : isMaintenance
-                      ? 'MAINTENANCE WINDOW (01:00–05:00 WIB)'
+                      ? 'MAINTENANCE (01:00–05:00 WIB)'
                       : 'OFF-PEAK SUPERVISED'}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Mode Akses Menulis:</span>
-                  <span className="font-mono text-white font-semibold">
+                  <span className="text-zinc-400">Akses Mutasi:</span>
+                  <span className="text-white font-medium">
                     {breakGlassActive
                       ? 'OVERRIDE GRANTED (Audit Logged)'
                       : isPeakFreeze
                       ? 'READ-ONLY (Changes Blocked)'
-                      : 'ALLOWED (Standard Approval)'}
+                      : 'ALLOWED (Supervised)'}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Dual-Operator (4-Eyes):</span>
-                  <span className="font-mono text-emerald-400 font-semibold flex items-center space-x-1">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                    <span>ENFORCED (HMAC Quorum)</span>
-                  </span>
+                  <span className="text-zinc-400">Four-Eyes Quorum:</span>
+                  <span className="text-emerald-400 font-medium">ENFORCED (Dual-Signoff)</span>
                 </div>
               </div>
 
-              <p className="text-[11px] text-slate-400 leading-relaxed font-sans">
-                Sesuai SOP <code className="text-cyan-300 font-mono">change-freeze-window-policy.md</code> dan{' '}
-                <code className="text-cyan-300 font-mono">dual-operator-four-eyes-rule.md</code>, seluruh eksekusi CLI mutating, perubahan BGP, routing, dan firewall pada jam sibuk memerlukan mitigasi darurat bersertifikat (Break-Glass) atau otorisasi dua pasang mata.
+              <p className="text-[11px] text-zinc-400 leading-relaxed font-sans">
+                Sesuai SOP <code className="text-zinc-300 font-mono">change-freeze-window-policy.md</code>, perubahan konfigurasi pada jam kerja sibuk memerlukan mitigasi darurat bersertifikat (Break-Glass) atau otorisasi dua operator.
               </p>
             </div>
 
             {/* Break Glass Controls */}
             {breakGlassActive ? (
-              <div className="p-3.5 rounded-xl bg-amber-950/40 border border-amber-500/50 space-y-3">
-                <div className="flex items-center space-x-2 text-amber-300 text-xs font-bold">
-                  <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+              <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/25 space-y-2.5">
+                <div className="flex items-center space-x-1.5 text-amber-400 text-xs font-semibold">
+                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
                   <span>EMERGENCY BREAK-GLASS SEDANG AKTIF</span>
                 </div>
-                <div className="text-[11px] text-slate-300 font-mono space-y-1">
-                  <div>
-                    Incident Ticket: <span className="text-white font-bold">{breakGlassTicket}</span>
-                  </div>
-                  <div>
-                    Alasan: <span className="text-slate-200">{breakGlassReason || 'Mitigasi darurat insiden NOC'}</span>
-                  </div>
-                  <div>
-                    Approver 2: <span className="text-cyan-300">{breakGlassApprover}</span>
-                  </div>
+                <div className="text-[11px] text-zinc-300 font-mono space-y-0.5">
+                  <div>Ticket: <span className="text-white font-medium">{breakGlassTicket}</span></div>
+                  <div>Alasan: <span className="text-zinc-200">{breakGlassReason || 'Mitigasi insiden'}</span></div>
+                  <div>Approver 2: <span className="text-zinc-300">{breakGlassApprover}</span></div>
                 </div>
                 <button
                   onClick={() => {
@@ -544,47 +570,47 @@ export const Topbar: React.FC = () => {
                     setBreakGlassReason('');
                     showToast('Emergency Break-Glass dicabut. Kebijakan Freeze kembali aktif.', 'info');
                   }}
-                  className="w-full py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition shadow-lg flex items-center justify-center space-x-1.5"
+                  className="w-full py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-md text-xs font-medium transition-colors flex items-center justify-center space-x-1.5"
                 >
                   <Lock className="w-3.5 h-3.5" />
-                  <span>Cabut Break-Glass &amp; Kunci Kembali (Freeze Armed)</span>
+                  <span>Cabut Break-Glass &amp; Kunci Kembali</span>
                 </button>
               </div>
             ) : (
-              <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
-                <div className="text-xs font-bold text-white flex items-center space-x-1.5">
-                  <KeyRound className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>Aktivasi Emergency Break-Glass (Inc-Override)</span>
+              <div className="p-3 rounded-lg bg-zinc-900 border border-zinc-800 space-y-2.5">
+                <div className="text-xs font-medium text-white flex items-center space-x-1.5">
+                  <KeyRound className="w-3.5 h-3.5 text-zinc-400" />
+                  <span>Aktivasi Emergency Break-Glass</span>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 font-sans">
                   <div>
-                    <label className="text-[10px] text-slate-400 font-mono">Incident Ticket / JIRA ID</label>
+                    <label className="text-[10px] text-zinc-400 font-mono">Incident Ticket / JIRA ID</label>
                     <input
                       type="text"
                       value={breakGlassTicket}
                       onChange={(e) => setBreakGlassTicket(e.target.value)}
-                      placeholder="e.g. INC-2026-9042"
-                      className="w-full mt-1 px-2.5 py-1.5 bg-[#070c18] border border-slate-700 rounded-lg text-xs text-white font-mono focus:outline-none focus:border-cyan-500"
+                      placeholder="INC-2026-9042"
+                      className="w-full mt-1 px-2.5 py-1.5 bg-[#09090b] border border-zinc-700 rounded-md text-xs text-white font-mono focus:outline-none focus:border-zinc-500"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] text-slate-400 font-mono">Alasan Tindakan Darurat</label>
+                    <label className="text-[10px] text-zinc-400 font-mono">Alasan Tindakan Darurat</label>
                     <input
                       type="text"
                       value={breakGlassReason}
                       onChange={(e) => setBreakGlassReason(e.target.value)}
                       placeholder="e.g. Fiber cut BGP peer rerouting traffic"
-                      className="w-full mt-1 px-2.5 py-1.5 bg-[#070c18] border border-slate-700 rounded-lg text-xs text-white font-sans focus:outline-none focus:border-cyan-500"
+                      className="w-full mt-1 px-2.5 py-1.5 bg-[#09090b] border border-zinc-700 rounded-md text-xs text-white focus:outline-none focus:border-zinc-500"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] text-slate-400 font-mono">Second Operator Quorum Signer</label>
+                    <label className="text-[10px] text-zinc-400 font-mono">Second Operator Signer</label>
                     <input
                       type="text"
                       value={breakGlassApprover}
                       onChange={(e) => setBreakGlassApprover(e.target.value)}
-                      placeholder="e.g. lead_netops_sec"
-                      className="w-full mt-1 px-2.5 py-1.5 bg-[#070c18] border border-slate-700 rounded-lg text-xs text-white font-mono focus:outline-none focus:border-cyan-500"
+                      placeholder="lead_netops_sec"
+                      className="w-full mt-1 px-2.5 py-1.5 bg-[#09090b] border border-zinc-700 rounded-md text-xs text-white font-mono focus:outline-none focus:border-zinc-500"
                     />
                   </div>
                 </div>
@@ -598,10 +624,10 @@ export const Topbar: React.FC = () => {
                     showToast(`Break-Glass diotorisasi oleh ${breakGlassApprover}! Sesi darurat aktif.`, 'warning');
                     setIsFreezeModalOpen(false);
                   }}
-                  className="w-full py-2 bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-500 hover:to-rose-500 text-white rounded-xl text-xs font-bold transition shadow-[0_0_20px_rgba(245,158,11,0.4)] flex items-center justify-center space-x-1.5"
+                  className="w-full py-1.5 bg-zinc-100 hover:bg-white text-zinc-950 font-medium rounded-md text-xs transition-colors flex items-center justify-center space-x-1.5 shadow-sm"
                 >
-                  <Unlock className="w-3.5 h-3.5" />
-                  <span>Otorisasi Emergency Break-Glass (HMAC Quorum Verified)</span>
+                  <Unlock className="w-3.5 h-3.5 text-zinc-950" />
+                  <span>Otorisasi Emergency Break-Glass</span>
                 </button>
               </div>
             )}

@@ -105,11 +105,13 @@ audira-netops-ai/
   - `skills/alert-storm-correlation-rca/`: SOP for AIOps alert storm deduplication, topology-aware event correlation, and root-cause analysis (RCA).
   - `skills/golden-config-drift-detector/`: SOP for Golden Template GitOps comparison, shadow change audit, and automated config reconciliation.
   - `skills/synthetic-sla-twamp-monitor/`: SOP for active synthetic telemetry, TWAMP / Cisco IP SLA probing, Jitter tracking, and VoIP MOS score evaluation.
+  - `skills/noc-theme-design-system/`: Design system guidelines, color tokens, and switching specifications for 4 Enterprise NOC themes (Studio Dark, Cyber Hologram, Obsidian Blue, Matrix Green).
 - **Rules**:
   - `rules/router-safety-guardrails.md`: Absolute blacklist, risk classification matrix, dual-operator approval.
   - `rules/secret-redaction-policy.md`: Zero credential leakage and regex log-masking specifications.
   - `rules/change-freeze-window-policy.md`: Peak freeze windows (08:00–22:00 WIB read-only), maintenance windows (01:00–05:00 WIB), and Emergency Break-Glass protocols.
   - `rules/dual-operator-four-eyes-rule.md`: Segregation of duties, two-person rule enforcement for CRITICAL operations, cryptographic HMAC approval.
+  - `rules/brain-sync-protocol.md`: Mandatory protocol requiring all agents to keep `.agents/brain/` synchronized on every feature addition or architecture modification.
 - **MCP Servers**: Configured in `.agents/mcp_config.json` for RouterOS and local diagnostics.
 
 ---
@@ -122,5 +124,21 @@ audira-netops-ai/
 4. **Vulnerability & Compliance Security Scanner**: Automated posture audit, CVE identification, and 1-click remediation.
 5. **Multi-Vendor Driver Connectors**: Native `CiscoIOSConnector`, `HuaweiVRPConnector`, and `JuniperJunosConnector` in `@audira/ssh`.
 6. **Telegram & Discord Bot Human-in-the-Loop Gate**: `BotApprovalService` with interactive inline keyboard and rich embed approval sign-off.
+
+---
+
+## 8. Persistent Project Brain & Living System Memory (`.agents/brain/` & `MEMORY.md`)
+
+Dokumentasi arsitektur persisten, protokol memori sistem, dan indeks pengetahuan terpusat disimpan di [`MEMORY.md`](file:///f:/AUDIRA-NetOps-AI/MEMORY.md), [`BRAIN.md`](file:///f:/AUDIRA-NetOps-AI/BRAIN.md) dan modul [`.agents/brain/`](file:///f:/AUDIRA-NetOps-AI/.agents/brain):
+- `MEMORY.md`: Panduan filosofi memori, 5 fungsi utama, dan 4 aturan emas anti-amnesia.
+- `SYSTEM_ARCHITECTURE.md`: Monorepo topology, apps & packages spec, and communication pipelines.
+- `FEATURE_CATALOG.md`: Comprehensive breakdown of all 24+ NOC modules and component paths.
+- `SECURITY_AND_GOVERNANCE.md`: 9-Step AI Execution Safety Pipeline, Risk Classification, Four-Eyes Quorum, Break-Glass, and Secret Redaction.
+- `MULTI_VENDOR_MATRIX.md`: Compatibility matrix for MikroTik, Cisco, Huawei, Juniper, and cross-vendor transpiler.
+- `DATABASE_AND_DATA_FLOW.md`: PostgreSQL 23 tables, Redis pub/sub, and Zustand client store.
+- `UPDATE_HISTORY_AND_ROADMAP.md`: Release history and future development roadmap.
+
+> **CRITICAL RULE**: Setiap penambahan atau pembaruan fitur **WAJIB** memperbarui dokumen terkait di `.agents/brain/` sesuai protokol [`rules/brain-sync-protocol.md`](file:///f:/AUDIRA-NetOps-AI/.agents/rules/brain-sync-protocol.md).
+
 
 

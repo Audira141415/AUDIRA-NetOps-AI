@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "identifier": "com.audira.netops",
   "build": {
-    "frontendDist": "../../apps/web/dist",
+    "frontendDist": "../../web/dist",
     "devUrl": "http://localhost:5180",
     "beforeDevCommand": "pnpm --filter @audira/web dev",
     "beforeBuildCommand": "pnpm --filter @audira/web build"

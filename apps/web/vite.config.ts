@@ -8,7 +8,7 @@ export default defineConfig({
     alias: {
       '@audira/monitoring': path.resolve(__dirname, '../../packages/monitoring/src'),
       '@audira/types': path.resolve(__dirname, '../../packages/types/src'),
-      '@audira/security': path.resolve(__dirname, '../../packages/security/src'),
+      '@audira/security': path.resolve(__dirname, '../../packages/security/src/browser.ts'),
       '@audira/ui': path.resolve(__dirname, '../../packages/ui/src'),
     },
   },

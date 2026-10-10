@@ -22,6 +22,7 @@ import { ComplianceView } from './components/compliance/ComplianceView';
 import { LoginView } from './components/auth/LoginView';
 import { SlaSyntheticView } from './components/monitoring/SlaSyntheticView';
 import { ConfigDriftView } from './components/config/ConfigDriftView';
+import { McpAgentHubView } from './components/mcp/McpAgentHubView';
 import { useNetOpsStore, NavigationTab } from './store/useNetOpsStore';
 
 const TAB_CONFIG: Record<NavigationTab, { hash: string; title: string }> = {
@@ -41,6 +42,7 @@ const TAB_CONFIG: Record<NavigationTab, { hash: string; title: string }> = {
   configuration: { hash: '#/config', title: 'Multi-Vendor Config Studio — AUDIRA NetOps AI' },
   backups: { hash: '#/backups', title: 'Disaster Recovery & Snapshots — AUDIRA NetOps AI' },
   'ai-copilot': { hash: '#/copilot', title: 'AI Network Copilot — AUDIRA NetOps AI' },
+  'mcp-hub': { hash: '#/mcp-hub', title: 'AI & MCP Hub — AUDIRA NetOps AI' },
   automation: { hash: '#/automation', title: 'Visual Automation Workflows — AUDIRA NetOps AI' },
   audit: { hash: '#/audit', title: 'Enterprise Audit Logs — AUDIRA NetOps AI' },
   settings: { hash: '#/settings', title: 'Platform Settings — AUDIRA NetOps AI' },
@@ -63,6 +65,7 @@ const HASH_TO_TAB: Record<string, NavigationTab> = {
   '#/config': 'configuration',
   '#/backups': 'backups',
   '#/copilot': 'ai-copilot',
+  '#/mcp-hub': 'mcp-hub',
   '#/automation': 'automation',
   '#/audit': 'audit',
   '#/settings': 'settings',
@@ -79,7 +82,15 @@ export const App: React.FC = () => {
     toast,
     clearToast,
     isAuthenticated,
+    theme,
   } = useNetOpsStore();
+
+  // Synchronize active theme with document element
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+  }, [theme]);
 
   // Listen to browser hash changes (Back / Forward button & direct URL loading with identity slugs)
   useEffect(() => {
@@ -210,6 +221,8 @@ export const App: React.FC = () => {
         return <BackupManager />;
       case 'ai-copilot':
         return <AICopilotDrawer />;
+      case 'mcp-hub':
+        return <McpAgentHubView />;
       case 'automation':
         return <AutomationView />;
       case 'audit':
@@ -222,7 +235,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-[#070c18] text-slate-100 overflow-hidden font-sans">
+    <div className="h-screen w-screen flex flex-col bg-[#09090b] text-zinc-100 overflow-hidden font-sans">
       {/* Topbar */}
       <Topbar />
 
@@ -232,13 +245,13 @@ export const App: React.FC = () => {
         <Sidebar />
 
         {/* Dynamic Center Stage */}
-        <main className="flex-1 overflow-y-auto bg-[#070c18] relative">
+        <main className="flex-1 overflow-y-auto bg-[#09090b] relative">
           {renderContent()}
         </main>
 
         {/* Right AI Drawer Panel when open and not already in full AI Copilot tab or Dashboard */}
         {isAiDrawerOpen && currentTab !== 'ai-copilot' && currentTab !== 'dashboard' && (
-          <aside className="w-96 border-l border-cyan-500/20 shadow-2xl z-20">
+          <aside className="w-96 border-l border-zinc-800 bg-[#0c0c0e] shadow-xl z-20">
             <AICopilotDrawer />
           </aside>
         )}
@@ -247,24 +260,24 @@ export const App: React.FC = () => {
       {/* Global Command Palette (Ctrl+K / Cmd+K / Ctrl+Shift+P) */}
       <CommandPalette />
 
-      {/* Floating System Toast Notification */}
+      {/* Floating System Toast Notification (Studio Style) */}
       {toast && (
-        <div className="fixed bottom-5 right-5 z-50 flex items-center space-x-3 px-4 py-3 rounded-xl bg-[#0d162a]/95 border border-cyan-500/40 shadow-[0_0_30px_rgba(6,182,212,0.35)] backdrop-blur-xl animate-in slide-in-from-bottom-5 duration-200">
+        <div className="fixed bottom-4 right-4 z-50 flex items-center space-x-2.5 px-3.5 py-2.5 rounded-lg bg-[#121215] border border-zinc-800 shadow-xl backdrop-blur-md animate-in slide-in-from-bottom-3 duration-150">
           <div
-            className={`w-2.5 h-2.5 rounded-full ${
+            className={`w-2 h-2 rounded-full ${
               toast.type === 'success'
-                ? 'bg-emerald-400 shadow-[0_0_8px_#34d399]'
+                ? 'bg-emerald-500'
                 : toast.type === 'error'
-                ? 'bg-rose-400 shadow-[0_0_8px_#f43f5e]'
-                : 'bg-cyan-400 shadow-[0_0_8px_#38bdf8]'
+                ? 'bg-rose-500'
+                : 'bg-blue-500'
             }`}
           />
-          <span className="text-xs font-mono text-slate-100 font-semibold tracking-wide">
+          <span className="text-xs font-mono text-zinc-200 font-medium">
             {toast.message}
           </span>
           <button
             onClick={() => clearToast()}
-            className="text-slate-400 hover:text-white text-xs ml-2 cursor-pointer"
+            className="text-zinc-500 hover:text-zinc-200 text-xs ml-2 cursor-pointer transition-colors"
           >
             ✕
           </button>

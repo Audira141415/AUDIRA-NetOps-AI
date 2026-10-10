@@ -1,5 +1,5 @@
-// Sidebar Navigation Component - Holographic Cyber NOC Cockpit
-// Grouped by Functional Domain (Operations, Infrastructure, Security, AI & Automation, System)
+// Sidebar Navigation Component - Minimalist Dark Studio (Vercel / Apple Developer Style)
+// Clean typography, high information density, 1px micro-borders, zero neon glow
 
 import React from 'react';
 import {
@@ -21,6 +21,7 @@ import {
   Binary,
   ShieldAlert,
   GitBranch,
+  Cpu,
 } from 'lucide-react';
 import { useNetOpsStore, NavigationTab } from '../../store/useNetOpsStore';
 
@@ -29,7 +30,7 @@ interface NavItem {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   badge?: string;
-  badgeColor?: string;
+  badgeVariant?: 'neutral' | 'accent' | 'warning' | 'danger';
 }
 
 interface NavGroup {
@@ -41,11 +42,11 @@ interface NavGroup {
 const NAV_GROUPS: NavGroup[] = [
   {
     id: 'operations',
-    title: 'Operations & Telemetry',
+    title: 'Operations',
     items: [
       { id: 'dashboard', label: 'Dashboard', icon: Home },
-      { id: 'monitoring', label: 'Monitoring', icon: Activity },
-      { id: 'synthetic-sla', label: 'Synthetic SLA', icon: Radio, badge: 'TWAMP', badgeColor: 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' },
+      { id: 'monitoring', label: 'Telemetry', icon: Activity },
+      { id: 'synthetic-sla', label: 'Synthetic SLA', icon: Radio, badge: 'TWAMP', badgeVariant: 'accent' },
       { id: 'topology', label: 'Topology', icon: Network },
       { id: 'alerts', label: 'Alerts', icon: Bell },
     ],
@@ -55,16 +56,16 @@ const NAV_GROUPS: NavGroup[] = [
     title: 'Network & Devices',
     items: [
       { id: 'devices', label: 'Devices', icon: Server },
-      { id: 'terminal', label: 'Terminal / Serial', icon: Terminal, badge: 'COM', badgeColor: 'bg-amber-500/20 text-amber-300 border border-amber-500/30' },
+      { id: 'terminal', label: 'Terminal / Serial', icon: Terminal, badge: 'COM', badgeVariant: 'neutral' },
       { id: 'ipam', label: 'Visual IPAM', icon: Binary },
-      { id: 'config-drift', label: 'Golden Drift', icon: GitBranch, badge: 'GitOps', badgeColor: 'bg-amber-500/20 text-amber-300 border border-amber-500/30' },
-      { id: 'configuration', label: 'Config', icon: FileText },
+      { id: 'config-drift', label: 'Golden Drift', icon: GitBranch, badge: 'GitOps', badgeVariant: 'warning' },
+      { id: 'configuration', label: 'Config Studio', icon: FileText },
       { id: 'backups', label: 'Backups', icon: HardDrive },
     ],
   },
   {
     id: 'security',
-    title: 'Security & Inspection',
+    title: 'Security & Posture',
     items: [
       { id: 'packet-sniffer', label: 'Packet Sniffer', icon: Radio },
       { id: 'compliance', label: 'Compliance & CVE', icon: ShieldAlert },
@@ -73,10 +74,11 @@ const NAV_GROUPS: NavGroup[] = [
   },
   {
     id: 'intelligence',
-    title: 'AI & Automation',
+    title: 'Automation & AI',
     items: [
       { id: 'ai-copilot', label: 'AI Copilot', icon: Bot },
-      { id: 'automation', label: 'Automation', icon: Zap },
+      { id: 'mcp-hub', label: 'AI & MCP Hub', icon: Cpu, badge: '51 Tools', badgeVariant: 'accent' },
+      { id: 'automation', label: 'Workflows', icon: Zap },
     ],
   },
   {
@@ -105,6 +107,7 @@ const TAB_HASH: Record<NavigationTab, string> = {
   configuration: '#/config',
   backups: '#/backups',
   'ai-copilot': '#/copilot',
+  'mcp-hub': '#/mcp-hub',
   automation: '#/automation',
   audit: '#/audit',
   settings: '#/settings',
@@ -113,14 +116,32 @@ const TAB_HASH: Record<NavigationTab, string> = {
 export const Sidebar: React.FC = () => {
   const { currentTab, setCurrentTab, setSelectedDevice, activeAlerts } = useNetOpsStore();
 
+  const getBadgeClass = (variant?: 'neutral' | 'accent' | 'warning' | 'danger') => {
+    switch (variant) {
+      case 'accent':
+        return 'bg-blue-500/10 text-blue-400 border border-blue-500/20';
+      case 'warning':
+        return 'bg-amber-500/10 text-amber-400 border border-amber-500/20';
+      case 'danger':
+        return 'bg-rose-500/10 text-rose-400 border border-rose-500/20';
+      case 'neutral':
+      default:
+        return 'bg-zinc-800 text-zinc-400 border border-zinc-700/60';
+    }
+  };
+
   return (
-    <aside className="w-56 bg-[#0a0f1d]/95 backdrop-blur-2xl border-r border-cyan-500/20 flex flex-col justify-between select-none z-20 shadow-[4px_0_30px_rgba(6,182,212,0.1)]">
+    <aside className="w-56 bg-[#09090b] border-r border-zinc-800 flex flex-col justify-between select-none z-20 shrink-0">
       {/* Scrollable Navigation Groups */}
-      <div className="py-2 px-2 space-y-3 overflow-y-auto max-h-[calc(100vh-175px)]">
+      <div className="py-2.5 px-2 space-y-3.5 overflow-y-auto max-h-[calc(100vh-165px)]">
         {NAV_GROUPS.map((group, groupIdx) => (
           <div key={group.id} className="space-y-0.5">
             {/* Functional Category Header */}
-            <div className={`px-2.5 pb-1 flex items-center justify-between text-[9px] font-mono font-bold tracking-wider text-slate-500 uppercase ${groupIdx > 0 ? 'pt-2 border-t border-slate-800/60' : 'pt-0.5'}`}>
+            <div
+              className={`px-2.5 pb-1 flex items-center justify-between text-[10px] font-medium tracking-wider text-zinc-500 uppercase ${
+                groupIdx > 0 ? 'pt-2.5 border-t border-zinc-800/60' : 'pt-0.5'
+              }`}
+            >
               <span>{group.title}</span>
             </div>
 
@@ -134,6 +155,10 @@ export const Sidebar: React.FC = () => {
                   item.id === 'alerts' && activeAlerts.length > 0
                     ? String(activeAlerts.length)
                     : item.badge;
+                const badgeVariant =
+                  item.id === 'alerts' && activeAlerts.length > 0
+                    ? 'danger'
+                    : item.badgeVariant;
                 const itemHref = TAB_HASH[item.id] || '#/dashboard';
 
                 return (
@@ -148,28 +173,26 @@ export const Sidebar: React.FC = () => {
                       setCurrentTab(item.id);
                       window.location.hash = itemHref;
                     }}
-                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 group ${
+                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors group ${
                       isActive
-                        ? 'bg-blue-600 text-white font-bold shadow-[0_0_18px_rgba(37,99,235,0.6)] border border-cyan-400/50'
-                        : 'text-slate-400 hover:text-white hover:bg-[#131d38]/70 hover:translate-x-0.5'
+                        ? 'bg-zinc-800 text-white border border-zinc-700/60 shadow-sm'
+                        : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900'
                     }`}
                   >
                     <div className="flex items-center space-x-2.5">
                       <Icon
-                        className={`w-3.5 h-3.5 transition ${
-                          isActive
-                            ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]'
-                            : 'text-slate-400 group-hover:text-cyan-300'
+                        className={`w-3.5 h-3.5 transition-colors ${
+                          isActive ? 'text-white' : 'text-zinc-400 group-hover:text-zinc-200'
                         }`}
                       />
-                      <span className="tracking-wide text-xs">{item.label}</span>
+                      <span className="tracking-tight text-xs">{item.label}</span>
                     </div>
 
                     {badge && (
                       <span
-                        className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full flex items-center justify-center ${
-                          item.badgeColor || 'bg-rose-500 text-white shadow-[0_0_8px_#f43f5e]'
-                        }`}
+                        className={`text-[9.5px] font-mono font-medium px-1.5 py-0.2 rounded ${getBadgeClass(
+                          badgeVariant
+                        )}`}
                       >
                         {badge}
                       </span>
@@ -182,54 +205,56 @@ export const Sidebar: React.FC = () => {
         ))}
       </div>
 
-      {/* Persistent Holographic System Status Card */}
-      <div className="p-2.5 border-t border-cyan-500/20 bg-[#070b16]/95 font-mono text-[11px] space-y-1.5 shrink-0">
-        <div className="flex items-center space-x-2 text-slate-200 font-bold tracking-wider text-[10.5px]">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse" />
-          <span>System Status</span>
+      {/* Studio Desktop System Status Card */}
+      <div className="p-2.5 border-t border-zinc-800 bg-[#0d0d10] font-mono text-[11px] space-y-2 shrink-0">
+        <div className="flex items-center justify-between text-zinc-300 text-[10.5px] font-sans font-medium">
+          <div className="flex items-center space-x-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span>Platform Status</span>
+          </div>
+          <span className="text-[10px] text-emerald-400 font-mono font-semibold">Ready</span>
         </div>
 
-        <div className="space-y-1 text-[10px]">
-          <div className="flex items-center justify-between text-slate-400">
+        <div className="space-y-1 text-[10px] text-zinc-400">
+          <div className="flex items-center justify-between">
             <span className="flex items-center space-x-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-              <span>AI Service</span>
+              <span className="w-1 h-1 rounded-full bg-zinc-500" />
+              <span>AI Gateway</span>
             </span>
-            <span className="text-emerald-400 font-bold">Online</span>
+            <span className="text-zinc-300 font-mono">audira-combo</span>
           </div>
 
-          <div className="flex items-center justify-between text-slate-400">
+          <div className="flex items-center justify-between">
             <span className="flex items-center space-x-1.5">
-              <Database className="w-3 h-3 text-cyan-400" />
+              <Database className="w-3 h-3 text-zinc-500" />
               <span>Database</span>
             </span>
-            <span className="text-emerald-400 font-bold">Connected</span>
+            <span className="text-zinc-300 font-mono">PostgreSQL</span>
           </div>
 
-          <div className="flex items-center justify-between text-slate-400">
+          <div className="flex items-center justify-between">
             <span className="flex items-center space-x-1.5">
-              <Network className="w-3 h-3 text-cyan-400" />
+              <Network className="w-3 h-3 text-zinc-500" />
               <span>RouterOS</span>
             </span>
-            <span className="text-emerald-400 font-bold">Connected</span>
+            <span className="text-zinc-300 font-mono">REST / SSL</span>
           </div>
 
-          <div className="flex items-center justify-between text-slate-400 pt-0.5 border-t border-slate-800/80">
+          <div className="flex items-center justify-between pt-1 border-t border-zinc-800/80">
             <span className="flex items-center space-x-1.5">
-              <Clock className="w-3 h-3 text-cyan-400" />
+              <Clock className="w-3 h-3 text-zinc-500" />
               <span>Uptime</span>
             </span>
-            <span className="text-cyan-300 font-semibold">5d 12h 33m</span>
+            <span className="text-zinc-300 font-mono">5d 12h 33m</span>
           </div>
         </div>
 
         <button
           onClick={() => setCurrentTab('landing')}
-          className="w-full pt-1 text-[9.5px] text-cyan-400/80 hover:text-cyan-300 text-center font-sans tracking-tight hover:underline cursor-pointer"
+          className="w-full pt-1 text-[9.5px] text-zinc-500 hover:text-zinc-300 text-center font-sans tracking-tight transition-colors cursor-pointer"
           title="Buka Landing Page & Info Lisensi Komersial AUDIRA"
         >
-          AUDIRA NetOps AI v1.0 <br />
-          <span className="text-[8.5px] text-slate-500">© 2025-2026 Agus Dwi R (Proprietary)</span>
+          AUDIRA NetOps AI v1.0.0
         </button>
       </div>
     </aside>

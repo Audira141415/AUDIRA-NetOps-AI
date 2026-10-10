@@ -2,107 +2,220 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+/* ========================================================================= */
+/* AUDIRA ENTERPRISE NOC THEME PRESETS (4 Professional Modes)                */
+/* ========================================================================= */
+
+:root,
+[data-theme="studio-dark"] {
   color-scheme: dark;
+  --bg-canvas: #09090b;
+  --bg-panel: #101014;
+  --bg-card: #121215;
+  --bg-surface: #18181b;
+  --bg-interactive: #222226;
+  --border-subtle: #27272a;
+  --border-hover: #3f3f46;
+  --text-main: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --accent-primary: #ffffff;
+  --accent-cyan: #38bdf8;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #ef4444;
+  --accent-violet: #8b5cf6;
+  --bg-glow: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120, 119, 198, 0.05), transparent);
+}
+
+[data-theme="cyber-hologram"] {
+  color-scheme: dark;
+  --bg-canvas: #0a051b;
+  --bg-panel: #130a2e;
+  --bg-card: #1c0e3f;
+  --bg-surface: #261353;
+  --bg-interactive: #341a6f;
+  --border-subtle: rgba(168, 85, 247, 0.28);
+  --border-hover: rgba(236, 72, 153, 0.55);
+  --text-main: #f8fafc;
+  --text-secondary: #e2e8f0;
+  --text-muted: #c084fc;
+  --accent-primary: #c084fc;
+  --accent-cyan: #2dd4bf;
+  --accent-emerald: #34d399;
+  --accent-amber: #fbbf24;
+  --accent-rose: #f43f5e;
+  --accent-violet: #d946ef;
+  --bg-glow: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(168, 85, 247, 0.16), transparent),
+             radial-gradient(ellipse 60% 40% at 85% 85%, rgba(236, 72, 153, 0.12), transparent);
+}
+
+[data-theme="obsidian-blue"] {
+  color-scheme: dark;
+  --bg-canvas: #070c18;
+  --bg-panel: #0d162a;
+  --bg-card: #131f38;
+  --bg-surface: #1a2a4b;
+  --bg-interactive: #223762;
+  --border-subtle: rgba(56, 189, 248, 0.22);
+  --border-hover: rgba(59, 130, 246, 0.5);
+  --text-main: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --accent-primary: #38bdf8;
+  --accent-cyan: #06b6d4;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+  --accent-violet: #6366f1;
+  --bg-glow: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56, 189, 248, 0.12), transparent),
+             radial-gradient(ellipse 60% 40% at 20% 90%, rgba(59, 130, 246, 0.08), transparent);
+}
+
+[data-theme="matrix-green"] {
+  color-scheme: dark;
+  --bg-canvas: #050d08;
+  --bg-panel: #0a170f;
+  --bg-card: #0f2216;
+  --bg-surface: #142e1e;
+  --bg-interactive: #1d3e2a;
+  --border-subtle: rgba(34, 197, 94, 0.26);
+  --border-hover: rgba(74, 222, 128, 0.55);
+  --text-main: #bbf7d0;
+  --text-secondary: #86efac;
+  --text-muted: #4ade80;
+  --accent-primary: #22c55e;
+  --accent-cyan: #22d3ee;
+  --accent-emerald: #22c55e;
+  --accent-amber: #f59e0b;
+  --accent-rose: #ef4444;
+  --accent-violet: #a855f7;
+  --bg-glow: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34, 197, 94, 0.12), transparent);
 }
 
 body {
-  background-color: #070c18;
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.15) 0px, transparent 45%),
-    radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.16) 0px, transparent 45%),
-    radial-gradient(at 50% 100%, rgba(168, 85, 247, 0.12) 0px, transparent 55%),
-    linear-gradient(to right, rgba(56, 189, 248, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(56, 189, 248, 0.04) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px, 32px 32px;
-  color: #F1F5F9;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-canvas);
+  background-image: var(--bg-glow);
+  color: var(--text-main);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Custom Holographic Cyber Scrollbar */
+/* Minimalist Studio Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #080e1e;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #06B6D4, #3B82F6);
+  background: var(--border-subtle);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #38BDF8, #60A5FA);
+  background: var(--border-hover);
 }
 
-/* Hologram Cyber Glassmorphism & Sheen */
+/* Dynamic Cards & Surfaces */
+.studio-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.studio-panel {
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.studio-interactive {
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.studio-interactive:hover {
+  background-color: var(--bg-interactive);
+  border-color: var(--border-hover);
+}
+
+/* Backward-compatible class mappings to convert former cyber elements */
 .glass-cyber-holo {
-  background: rgba(14, 23, 45, 0.72);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  box-shadow: 0 8px 32px 0 rgba(2, 6, 23, 0.5), inset 0 1px 1px 0 rgba(255, 255, 255, 0.08);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.4);
 }
 
 .glass-cyber-card {
-  background: rgba(15, 23, 42, 0.8);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(56, 189, 248, 0.18);
-  box-shadow: 0 4px 20px 0 rgba(3, 7, 18, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.3);
 }
 
 .glass-cyber-interactive {
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.15s ease-out;
 }
 
 .glass-cyber-interactive:hover {
-  border-color: rgba(56, 189, 248, 0.45);
-  box-shadow: 0 0 25px 0 rgba(6, 182, 212, 0.25), inset 0 1px 1px 0 rgba(255, 255, 255, 0.15);
-  transform: translateY(-1px);
+  background: var(--bg-interactive);
+  border-color: var(--border-hover);
 }
 
-/* Iridescent Text Gradient */
+/* Hologram specific styling overlay when Cyber Theme is active */
+[data-theme="cyber-hologram"] .glass-cyber-card,
+[data-theme="cyber-hologram"] .studio-card {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 24px 0 rgba(10, 5, 27, 0.65), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="matrix-green"] .studio-card {
+  box-shadow: 0 0 15px -3px rgba(34, 197, 94, 0.12);
+}
+
+/* Clean Monochrome & Multi-Theme Text Gradients */
 .text-holo-gradient {
-  background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 30%, #7DD3FC 70%, #38BDF8 100%);
+  background: linear-gradient(180deg, var(--text-main) 0%, var(--text-secondary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .text-holo-emerald {
-  background: linear-gradient(135deg, #A7F3D0 0%, #34D399 50%, #10B981 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--accent-emerald);
 }
 
 .text-holo-cyan {
-  background: linear-gradient(135deg, #CFFAFE 0%, #67E8F9 50%, #06B6D4 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--accent-cyan);
 }
 
-/* Holographic Edge Lines */
+/* Hairline Accents */
 .holo-line {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.8), rgba(59, 130, 246, 0.8), rgba(45, 212, 191, 0.8), transparent);
+  background: var(--border-subtle);
 }
 
+/* Semantic Status Glows */
 .glow-blue {
-  box-shadow: 0 0 20px -2px rgba(59, 130, 246, 0.45);
+  box-shadow: 0 0 12px -2px rgba(59, 130, 246, 0.25);
 }
 
 .glow-cyan {
-  box-shadow: 0 0 20px -2px rgba(6, 182, 212, 0.45);
+  box-shadow: 0 0 12px -2px rgba(56, 189, 248, 0.25);
 }
 
 .glow-emerald {
-  box-shadow: 0 0 20px -2px rgba(16, 185, 129, 0.45);
+  box-shadow: 0 0 12px -2px rgba(16, 185, 129, 0.25);
 }
 
 .glow-rose {
-  box-shadow: 0 0 20px -2px rgba(244, 63, 94, 0.45);
+  box-shadow: 0 0 12px -2px rgba(239, 68, 68, 0.25);
 }

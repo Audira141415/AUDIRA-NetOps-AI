@@ -33,13 +33,17 @@ import {
   Zap,
   Check,
   Award,
+  Palette,
 } from 'lucide-react';
 import { AIProviderType, VendorType } from '@audira/types';
+import { useNetOpsStore, NocTheme, NOC_THEMES } from '../../store/useNetOpsStore';
 
 export const SettingsView: React.FC = () => {
+  const { theme, setTheme } = useNetOpsStore();
+
   // Navigation Sub-tab
   const [activeTab, setActiveTab] = useState<
-    'ai-gateway' | 'routers' | 'notifications' | 'telemetry' | 'backup' | 'security'
+    'ai-gateway' | 'routers' | 'notifications' | 'telemetry' | 'backup' | 'security' | 'theme-appearance'
   >('ai-gateway');
 
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
@@ -331,6 +335,7 @@ export const SettingsView: React.FC = () => {
           { id: 'telemetry', label: 'Telemetry & Auto-Discovery', icon: Activity },
           { id: 'backup', label: 'Disaster Recovery & Storage', icon: HardDrive },
           { id: 'security', label: 'Security & Legal License', icon: Shield },
+          { id: 'theme-appearance', label: 'Theme & Appearance', icon: Palette },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -1460,6 +1465,99 @@ export const SettingsView: React.FC = () => {
                   <div className="text-emerald-400 font-bold">Immutable PostgreSQL Log</div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 7: THEME & NOC DESIGN SYSTEM */}
+      {activeTab === 'theme-appearance' && (
+        <div className="space-y-6">
+          <div className="glass-cyber-card p-6 rounded-2xl border border-cyan-500/25 space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-cyan-500/20 pb-4 gap-3">
+              <div className="flex items-center space-x-3">
+                <div className="p-2.5 rounded-xl bg-cyan-950/80 border border-cyan-500/30 text-cyan-400">
+                  <Palette className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-white tracking-wide">
+                    Enterprise NOC Themes &amp; Design System
+                  </h2>
+                  <p className="text-xs text-slate-400 font-sans mt-0.5">
+                    Palet tema resmi yang dirancang khusus untuk kenyamanan mata operator shift malam (Anti-Fatigue) &amp; densitas metrik telemetri tinggi.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-xs font-mono px-3 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 flex items-center space-x-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Aktif: {NOC_THEMES[theme]?.name || theme}</span>
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {(Object.keys(NOC_THEMES) as NocTheme[]).map((themeKey) => {
+                const item = NOC_THEMES[themeKey];
+                const isSelected = theme === themeKey;
+                return (
+                  <div
+                    key={themeKey}
+                    onClick={() => {
+                      setTheme(themeKey);
+                      triggerSaveSuccess(`Tema NOC berhasil diterapkan: ${item.name}`);
+                    }}
+                    className={`cursor-pointer rounded-xl p-5 border transition-all duration-200 relative ${
+                      isSelected
+                        ? 'bg-zinc-800/90 border-cyan-400 shadow-[0_0_25px_rgba(6,182,212,0.3)] ring-1 ring-cyan-400'
+                        : 'bg-zinc-900/60 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center space-x-3">
+                        <div
+                          className="w-9 h-9 rounded-lg border flex items-center justify-center shadow-inner"
+                          style={{
+                            backgroundColor: item.previewBg,
+                            borderColor: item.previewBorder,
+                          }}
+                        >
+                          <span
+                            className="w-3.5 h-3.5 rounded-full ring-2 ring-white/20"
+                            style={{ backgroundColor: item.previewDot }}
+                          />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-bold text-white flex items-center space-x-2">
+                            <span>{item.name}</span>
+                            {isSelected && (
+                              <span className="text-[10px] font-mono px-2 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                ACTIVE
+                              </span>
+                            )}
+                          </h3>
+                          <p className="text-[11px] text-zinc-400 font-sans mt-0.5">{item.tagline}</p>
+                        </div>
+                      </div>
+                      {isSelected && <Check className="w-5 h-5 text-emerald-400" />}
+                    </div>
+
+                    {/* Preview mini palette bar */}
+                    <div className="mt-3 p-3 rounded-lg bg-black/40 border border-white/5 space-y-2">
+                      <div className="flex items-center justify-between text-[10.5px] font-mono text-zinc-400">
+                        <span>Palette Swatches:</span>
+                        <span className="text-zinc-500 text-[9.5px]">WCAG AAA Contrast</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="h-4 w-8 rounded" style={{ backgroundColor: item.previewBg, border: `1px solid ${item.previewBorder}` }} title="Canvas" />
+                        <span className="h-4 w-8 rounded" style={{ backgroundColor: item.previewBorder }} title="Border" />
+                        <span className="h-4 w-8 rounded" style={{ backgroundColor: item.previewDot }} title="Accent Status" />
+                        <span className="h-4 w-8 rounded" style={{ backgroundColor: item.primaryColor }} title="Primary Highlight" />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

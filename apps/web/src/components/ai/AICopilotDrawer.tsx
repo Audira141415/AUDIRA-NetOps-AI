@@ -79,7 +79,68 @@ Ada kendala routing, BGP, bandwidth, atau konfigurasi switch yang bisa saya bant
     if (!textToSend) setInputPrompt('');
     setIsProcessing(true);
 
-    // 1. Try real live completion via AUDIRA AI Gateway
+    // 1. Try real live completion via AUDIRA NetOps Backend API Gateway
+    try {
+      const token = localStorage.getItem('token') || 'demo-jwt-token';
+      const backendRes = await fetch('/api/v1/ai/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          messages: [
+            ...messages.map((m) => ({
+              role: m.sender === 'user' ? 'user' : 'assistant',
+              content: m.content,
+            })),
+            { role: 'user', content: query },
+          ],
+          deviceId: '30000000-0000-0000-0000-000000000001',
+          deviceName: 'CORE-JOGJA-01',
+        }),
+      });
+
+      if (backendRes.ok) {
+        const payload = await backendRes.json();
+        if (payload.success && payload.data) {
+          const aiMsg = payload.data.message;
+          const pipeline = payload.data.pipelineEvaluation;
+          const executedTools = payload.data.executedTools || [];
+
+          const toolCallsFormatted = executedTools.length > 0
+            ? executedTools.map((t: any) => ({
+                name: t.tool,
+                status: t.success ? ('SUCCESS' as const) : ('RUNNING' as const),
+                output: typeof t.result === 'object' ? JSON.stringify(t.result).slice(0, 80) + '...' : String(t.result),
+              }))
+            : aiMsg?.toolCalls?.map((tc: any) => ({
+                name: tc.name,
+                status: 'SUCCESS' as const,
+                output: 'Safety pipeline passed',
+              })) || [
+                { name: 'audira_pipeline_eval', status: 'SUCCESS' as const, output: `Risk: ${pipeline?.riskLevel || 'LOW'}` },
+              ];
+
+          const aiResponse: ChatMessage = {
+            id: `msg-${Date.now() + 1}`,
+            sender: 'assistant',
+            content: aiMsg?.content || 'Pemeriksaan telemetri dan pipeline keamanan selesai dievaluasi.',
+            toolCalls: toolCallsFormatted,
+            riskLevel: pipeline?.riskLevel || 'LOW',
+            approvalStatus: pipeline?.requiresExplicitApproval ? 'PENDING' : 'APPROVED',
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          };
+          setMessages((prev) => [...prev, aiResponse]);
+          setIsProcessing(false);
+          return;
+        }
+      }
+    } catch {
+      // Backend not running on same origin, proceed to public AI neural gateway
+    }
+
+    // 2. Try AUDIRA AI Cloud Gateway
     try {
       const gatewayUrl = 'https://ai.audira.net/v1/chat/completions';
       const res = await fetch(gatewayUrl, {

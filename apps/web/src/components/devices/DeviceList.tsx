@@ -133,23 +133,23 @@ export const DeviceList: React.FC = () => {
     switch (status) {
       case 'ONLINE':
         return (
-          <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-            <CheckCircle2 className="w-3 h-3" />
+          <span className="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-md text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
             <span>ONLINE</span>
           </span>
         );
       case 'WARNING':
         return (
-          <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[10px] font-mono bg-amber-500/10 text-amber-400 border border-amber-500/30">
-            <AlertTriangle className="w-3 h-3" />
+          <span className="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-md text-[10px] font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
             <span>WARNING</span>
           </span>
         );
       case 'OFFLINE':
       default:
         return (
-          <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[10px] font-mono bg-rose-500/10 text-rose-400 border border-rose-500/30">
-            <XCircle className="w-3 h-3" />
+          <span className="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-md text-[10px] font-mono bg-rose-500/10 text-rose-400 border border-rose-500/20">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
             <span>OFFLINE</span>
           </span>
         );
@@ -216,20 +216,20 @@ export const DeviceList: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center space-x-2 flex-1 max-w-md">
           <div className="relative w-full">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-2.5" />
             <input
               type="text"
               placeholder="Filter by name, IP, hostname..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 bg-[#111c38] border border-cyan-500/25 rounded-xl text-xs font-mono text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+              className="w-full pl-9 pr-3 py-1.5 bg-zinc-900 border border-zinc-800 rounded-lg text-xs font-mono text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-700 transition"
             />
           </div>
 
           <select
             value={vendorFilter}
             onChange={(e) => setVendorFilter(e.target.value)}
-            className="bg-[#111c38] border border-cyan-500/25 text-slate-300 text-xs font-mono rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-cyan-400"
+            className="bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs font-mono rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-zinc-700 transition"
           >
             <option value="ALL">All Vendors</option>
             <option value="MikroTik">MikroTik RouterOS</option>
@@ -249,27 +249,27 @@ export const DeviceList: React.FC = () => {
         <div className="flex items-center space-x-2">
           <button
             onClick={handleExportCSV}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#111c38] hover:bg-[#1a2952] border border-cyan-500/30 text-cyan-300 font-mono text-xs transition"
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 font-sans text-xs transition"
             title="Download Device Inventory as CSV"
           >
-            <Download className="w-3.5 h-3.5" />
+            <Download className="w-3.5 h-3.5 text-zinc-400" />
             <span className="hidden sm:inline">Export CSV</span>
           </button>
 
           {devices.length > 0 && (
             <button
               onClick={resetDevicesToDefaults}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 border border-rose-500/30 text-rose-300 font-mono text-xs transition"
-              title="Hapus semua perangkat yang terdaftar (Clean Slate)"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-rose-950/20 hover:bg-rose-900/40 border border-rose-800/40 text-rose-400 font-sans text-xs transition"
+              title="Reset inventory to empty state"
             >
               <RotateCcw className="w-3.5 h-3.5 text-rose-400" />
-              <span className="hidden sm:inline">Kosongkan Data</span>
+              <span className="hidden sm:inline">Clear Fleet</span>
             </button>
           )}
 
           <button
             onClick={() => setAddDeviceModalOpen(true)}
-            className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-[0_0_15px_rgba(37,99,235,0.4)] transition"
+            className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-xs shadow-sm transition"
           >
             <Plus className="w-4 h-4" />
             <span>Add Device</span>
@@ -278,33 +278,33 @@ export const DeviceList: React.FC = () => {
       </div>
 
       {/* Devices List Table */}
-      <div className="glass-cyber-card rounded-2xl border border-cyan-500/20 overflow-hidden shadow-lg">
+      <div className="bg-[#121215] rounded-xl border border-zinc-800 overflow-hidden shadow-sm">
         {filteredDevices.length === 0 ? (
           <div className="p-12 text-center space-y-3">
-            <div className="w-14 h-14 rounded-2xl bg-cyan-950/40 border border-cyan-500/40 flex items-center justify-center text-cyan-400 mx-auto shadow-[0_0_20px_rgba(6,182,212,0.3)]">
-              <Server className="w-7 h-7" />
+            <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 mx-auto">
+              <Server className="w-6 h-6" />
             </div>
             <div>
-              <div className="text-sm font-bold text-white">Tidak Ada Perangkat Jaringan</div>
-              <div className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+              <div className="text-sm font-semibold text-zinc-200">No Network Devices Found</div>
+              <div className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
                 {devices.length === 0
-                  ? 'Sistem saat ini dalam keadaan bersih. Klik tombol di bawah untuk mendaftarkan router atau switch fisik pertama Anda.'
-                  : 'Tidak ada perangkat yang cocok dengan filter pencarian.'}
+                  ? 'Your inventory is currently empty. Connect a physical router or switch to begin telemetry ingestion.'
+                  : 'No devices match your search criteria.'}
               </div>
             </div>
             {devices.length === 0 && (
               <button
                 onClick={() => setAddDeviceModalOpen(true)}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-xs shadow-md transition"
+                className="px-4 py-2 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-xs transition shadow-sm"
               >
-                + Tambah Perangkat Pertama
+                + Add First Device
               </button>
             )}
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs font-mono">
-              <thead className="bg-[#0b1222] border-b border-cyan-500/20 text-slate-400">
+              <thead className="bg-zinc-900/60 border-b border-zinc-800 text-zinc-400 font-sans text-[11px] uppercase tracking-wider">
                 <tr>
                   <th className="p-3">Device Name</th>
                   <th className="p-3">IP &amp; Hostname</th>
@@ -314,41 +314,41 @@ export const DeviceList: React.FC = () => {
                   <th className="p-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-cyan-500/10">
+              <tbody className="divide-y divide-zinc-800/80">
                 {filteredDevices.map((dev) => (
-                  <tr key={dev.id} className="hover:bg-white/5 transition">
-                    <td className="p-3 font-semibold text-white">
+                  <tr key={dev.id} className="hover:bg-zinc-900/40 transition">
+                    <td className="p-3 font-semibold text-zinc-100">
                       <a
                         href={`#/devices/${encodeURIComponent(dev.name.toLowerCase())}`}
                         onClick={(e) => {
                           e.preventDefault();
                           setSelectedDevice(dev);
                         }}
-                        className="hover:text-cyan-300 flex items-center space-x-1.5 transition text-left cursor-pointer"
+                        className="hover:text-white flex items-center space-x-2 transition text-left cursor-pointer"
                       >
-                        <Server className="w-3.5 h-3.5 text-cyan-400" />
-                        <span className="font-bold">{dev.name}</span>
-                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-cyan-300 border border-slate-700">
-                          [{dev.vendor.toUpperCase()}]
+                        <Server className="w-3.5 h-3.5 text-zinc-400" />
+                        <span className="font-semibold text-zinc-100">{dev.name}</span>
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700/60">
+                          {dev.vendor}
                         </span>
                       </a>
                     </td>
-                    <td className="p-3 text-slate-300 font-mono">
-                      <div className="flex items-center space-x-1.5 font-bold text-white">
-                        <Globe className="w-3 h-3 text-cyan-400 shrink-0" />
+                    <td className="p-3 text-zinc-300 font-mono">
+                      <div className="flex items-center space-x-1.5 font-medium text-zinc-200">
+                        <Globe className="w-3 h-3 text-zinc-400 shrink-0" />
                         <a
                           href={`#/devices/${encodeURIComponent(dev.name.toLowerCase())}`}
                           onClick={(e) => {
                             e.preventDefault();
                             setSelectedDevice(dev);
                           }}
-                          className="text-cyan-300 hover:underline hover:text-cyan-200"
+                          className="text-zinc-300 hover:text-white hover:underline"
                         >
                           {dev.hostname}
                         </a>
                       </div>
-                      <div className="flex items-center space-x-2 text-[10px] text-slate-400 mt-0.5">
-                        <span className="text-slate-300 font-semibold">{dev.ipAddress}</span>
+                      <div className="flex items-center space-x-2 text-[10px] text-zinc-500 mt-0.5">
+                        <span className="text-zinc-400">{dev.ipAddress}</span>
                         <span>•</span>
                         {(() => {
                           const endpointUri =
@@ -361,11 +361,11 @@ export const DeviceList: React.FC = () => {
                               : `https://${dev.hostname}:${dev.apiPort || 443}`;
                           return (
                             <span
-                              className="text-cyan-400 bg-cyan-950/60 px-1.5 py-0.2 rounded border border-cyan-500/20 cursor-pointer hover:border-cyan-400 flex items-center space-x-1"
-                              title="Klik untuk salin URI resmi"
+                              className="text-zinc-400 bg-zinc-900 px-1.5 py-0.5 rounded border border-zinc-800 cursor-pointer hover:border-zinc-700 hover:text-zinc-200 flex items-center space-x-1 transition"
+                              title="Click to copy URI"
                               onClick={() => {
                                 navigator.clipboard.writeText(endpointUri);
-                                showToast(`URI ${endpointUri} berhasil disalin!`, 'info');
+                                showToast(`URI ${endpointUri} copied!`, 'info');
                               }}
                             >
                               <span>{endpointUri}</span>
@@ -374,45 +374,45 @@ export const DeviceList: React.FC = () => {
                         })()}
                       </div>
                     </td>
-                    <td className="p-3 text-slate-300">
+                    <td className="p-3 text-zinc-300">
                       <div>{dev.vendor}</div>
-                      <div className="text-[10px] text-slate-500">{dev.platform}</div>
+                      <div className="text-[10px] text-zinc-500">{dev.platform}</div>
                     </td>
                     <td className="p-3">{getStatusBadge(dev.status)}</td>
-                    <td className="p-3 text-slate-400 text-[11px]">{dev.lastSeen}</td>
+                    <td className="p-3 text-zinc-400 text-[11px]">{dev.lastSeen}</td>
                     <td className="p-3 text-right">
                       <div className="flex items-center justify-end space-x-1.5">
                         <button
                           onClick={() => setViewingDevice(dev)}
-                          className="p-1.5 rounded-lg bg-[#111c38] hover:bg-[#1b2a52] border border-cyan-500/20 text-slate-300 hover:text-cyan-300 transition"
+                          className="p-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition"
                           title="Quick View Details"
                         >
                           <Eye className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => handleOpenEdit(dev)}
-                          className="p-1.5 rounded-lg bg-[#111c38] hover:bg-[#1b2a52] border border-amber-500/30 text-amber-300 hover:text-white transition"
+                          className="p-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-amber-400 transition"
                           title="Edit Device Properties"
                         >
                           <Pencil className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => addTerminalTab(dev)}
-                          className="p-1.5 rounded-lg bg-[#111c38] hover:bg-[#1b2a52] border border-cyan-500/20 text-slate-300 hover:text-white transition"
+                          className="p-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition"
                           title="Open SSH Terminal"
                         >
-                          <Terminal className="w-3.5 h-3.5 text-cyan-400" />
+                          <Terminal className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => setSelectedDevice(dev)}
-                          className="p-1.5 rounded-lg bg-[#111c38] hover:bg-[#1b2a52] border border-cyan-500/20 text-slate-300 hover:text-white transition"
+                          className="p-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition"
                           title="WinBox Device Management"
                         >
-                          <ExternalLink className="w-3.5 h-3.5 text-cyan-400" />
+                          <ExternalLink className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => setDeletingDevice(dev)}
-                          className="p-1.5 rounded-lg bg-[#111c38] hover:bg-rose-950/80 border border-rose-500/30 text-rose-400 hover:text-rose-200 transition"
+                          className="p-1.5 rounded-lg bg-zinc-900 hover:bg-rose-950/40 border border-zinc-800 hover:border-rose-900 text-zinc-400 hover:text-rose-400 transition"
                           title="Delete Device"
                         >
                           <Trash2 className="w-3.5 h-3.5" />

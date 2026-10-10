@@ -37,15 +37,33 @@ if (-not (Test-Path $envPath) -and (Test-Path $envExamplePath)) {
     Copy-Item $envExamplePath $envPath
 }
 
-# 3. Check Docker status
+# 3. Clean up stale/zombie processes on stack ports
+$stackPorts = @(5180, 5181, 3000, 3001)
+foreach ($port in $stackPorts) {
+    $connections = Get-NetTCPConnection -LocalPort $port -ErrorAction SilentlyContinue
+    if ($connections) {
+        $pids = $connections | Select-Object -ExpandProperty OwningProcess -Unique
+        foreach ($procId in $pids) {
+            try {
+                $proc = Get-Process -Id $procId -ErrorAction SilentlyContinue
+                if ($proc) {
+                    Write-Host "[CLEANUP] Freeing stale port $port (terminated '$($proc.ProcessName)' PID: $procId)..." -ForegroundColor Yellow
+                    Stop-Process -Id $procId -Force -ErrorAction SilentlyContinue
+                }
+            } catch {}
+        }
+    }
+}
+
+# 4. Check Docker status
 if (Get-Command "docker" -ErrorAction SilentlyContinue) {
     try {
-        $dockerCheck = docker ps 2>&1
+        $null = & docker ps 2>$null
         if ($LASTEXITCODE -eq 0) {
             Write-Host "[DOCKER] Docker daemon active. Starting backing services (PostgreSQL, Redis, Ollama)..." -ForegroundColor Green
-            docker compose -f docker-compose.dev.yml up -d
+            docker compose -f docker-compose.dev.yml up -d 2>$null
         } else {
-            Write-Host "[INFO] Docker daemon is stopped. Proceeding with simulated demo network." -ForegroundColor Gray
+            Write-Host "[INFO] Docker daemon is offline. Proceeding with simulated demo network." -ForegroundColor Gray
         }
     } catch {
         Write-Host "[INFO] Proceeding with simulated demo network." -ForegroundColor Gray

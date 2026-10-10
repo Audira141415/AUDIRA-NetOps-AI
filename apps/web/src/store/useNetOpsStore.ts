@@ -1,7 +1,9 @@
 import { create } from 'zustand';
 import { Device, Alert, NetworkHealthSummary } from '@audira/types';
+import { NocTheme, NocThemeMeta, NOC_THEMES } from '@audira/ui';
 
-export type { Device, Alert, NetworkHealthSummary };
+export type { Device, Alert, NetworkHealthSummary, NocTheme, NocThemeMeta };
+export { NOC_THEMES };
 
 export type NavigationTab =
   | 'landing'
@@ -20,6 +22,7 @@ export type NavigationTab =
   | 'compliance'
   | 'alerts'
   | 'ai-copilot'
+  | 'mcp-hub'
   | 'automation'
   | 'audit'
   | 'settings';
@@ -171,6 +174,10 @@ interface NetOpsState {
 
   activeAlerts: Alert[];
   setActiveAlerts: (alerts: Alert[]) => void;
+
+  // NOC Theme System
+  theme: NocTheme;
+  setTheme: (theme: NocTheme) => void;
 }
 
 const getInitialNavigationTab = (): NavigationTab => {
@@ -424,4 +431,23 @@ export const useNetOpsStore = create<NetOpsState>((set, get) => ({
 
   activeAlerts: [],
   setActiveAlerts: (activeAlerts) => set({ activeAlerts }),
+
+  // NOC Theme Implementation
+  theme:
+    typeof window !== 'undefined'
+      ? ((localStorage.getItem('audira_noc_theme') as NocTheme) || 'studio-dark')
+      : 'studio-dark',
+  setTheme: (theme: NocTheme) => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('audira_noc_theme', theme);
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch {
+        // storage disabled or sandbox
+      }
+    }
+    set({ theme });
+    const name = NOC_THEMES[theme]?.name || theme;
+    get().showToast(`Tema NOC beralih ke: ${name}`, 'info');
+  },
 }));
